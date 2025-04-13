@@ -3,7 +3,6 @@ package api.endeavorbackend.services;
 import api.endeavorbackend.enuns.StatusCronometro;
 import api.endeavorbackend.models.TempoMateria;
 import api.endeavorbackend.repositorios.TempoMateriaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
