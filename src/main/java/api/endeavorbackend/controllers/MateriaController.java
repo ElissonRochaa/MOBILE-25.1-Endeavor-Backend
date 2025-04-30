@@ -25,8 +25,20 @@ public class MateriaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Materia> buscar(@PathVariable String id) {
+    public ResponseEntity<Materia> buscar(@PathVariable Long id) {
         Optional<Materia> materia = materiaService.buscar(id);
         return materia.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<Materia> create(@RequestBody Materia materia) {
+        materiaService.salvar(materia);
+        return ResponseEntity.ok(materia);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<Materia> update(@RequestBody long materiaId, @RequestBody Materia materia) {
+        materiaService.buscar(materiaId);
+        return ResponseEntity.ok(materia);
     }
 }

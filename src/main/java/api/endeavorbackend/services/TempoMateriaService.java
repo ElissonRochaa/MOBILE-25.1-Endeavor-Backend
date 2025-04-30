@@ -25,7 +25,7 @@ public class TempoMateriaService {
         return tempoMateriaRepository.save(tempoMateria);
     }
 
-    public TempoMateria pausarTempoMateria(String id) {
+    public TempoMateria pausarTempoMateria(Long id) {
         Optional<TempoMateria> tempoMateriaOptional = tempoMateriaRepository.findById(id);
         if (tempoMateriaOptional.isPresent()) {
             TempoMateria tempoMateria = tempoMateriaOptional.get();
@@ -41,7 +41,7 @@ public class TempoMateriaService {
         throw new RuntimeException("Sessão de estudo não encontrada.");
     }
 
-    public TempoMateria continuarTempoMateria(String id) {
+    public TempoMateria continuarTempoMateria(Long id) {
         Optional<TempoMateria> tempoMateriaOptional = tempoMateriaRepository.findById(id);
         if (tempoMateriaOptional.isPresent()) {
             TempoMateria tempoMateria = tempoMateriaOptional.get();
@@ -55,7 +55,7 @@ public class TempoMateriaService {
         throw new RuntimeException("Sessão de estudo não encontrada.");
     }
 
-    public TempoMateria finalizarTempoMateria(String id) {
+    public TempoMateria finalizarTempoMateria(Long id) {
         Optional<TempoMateria> tempoMateriaOptional = tempoMateriaRepository.findById(id);
         if (tempoMateriaOptional.isPresent()) {
             TempoMateria tempoMateria = tempoMateriaOptional.get();
@@ -79,11 +79,11 @@ public class TempoMateriaService {
         return tempoMateriaRepository.findAll();
     }
 
-    public Optional<TempoMateria> buscar(String id) {
+    public Optional<TempoMateria> buscar(Long id) {
         return tempoMateriaRepository.findById(id);
     }
 
-    public Long getTotalTempoMateria(String idMateria) {
+    public Long getTotalTempoMateria(Long idMateria) {
         long total = 0;
         for (TempoMateria tempoMateria : tempoMateriaRepository.getTempoMateria(idMateria)) {
             total += tempoMateria.getTempoTotalAcumulado();
@@ -99,7 +99,7 @@ public class TempoMateriaService {
         return total;
     }
 
-    public Long getTempoNoDiaPorMateria(String idMateria, LocalDate date) {
+    public Long getTempoNoDiaPorMateria(Long idMateria, LocalDate date) {
         long total = 0;
         for (TempoMateria tempoMateria : tempoMateriaRepository.getTempoMateriaNoDia(idMateria, date)) {
             total += tempoMateria.getTempoTotalAcumulado();
@@ -115,7 +115,7 @@ public class TempoMateriaService {
         return total;
     }
 
-    public Long getTempoNaSemanaPorMateria(String idMateria, LocalDate inicioSemana, LocalDate fimSemana) {
+    public Long getTempoNaSemanaPorMateria(Long idMateria, LocalDate inicioSemana, LocalDate fimSemana) {
         long total = 0;
         for (TempoMateria tempoMateria : tempoMateriaRepository.getTempoNaSemanaPorMateria(idMateria, inicioSemana, fimSemana)) {
             total += tempoMateria.getTempoTotalAcumulado();
@@ -123,14 +123,14 @@ public class TempoMateriaService {
         return total;
     }
 
-    public Long getDuracaoSessaoEstudo(String materia) {
+    public Long getDuracaoSessaoEstudo(Long materia) {
         Optional<TempoMateria> tempoMateria = tempoMateriaRepository.findById(materia);
         return tempoMateria
                 .map(TempoMateria::getDuracao)
                 .orElseThrow(() -> new RuntimeException("Sessão de estudo não encontrada para a matéria: " + materia)); // Se não encontrar, lança a exceção
     }
 
-    public Long getTempoTotalAcumulado(String id) {
+    public Long getTempoTotalAcumulado(Long id) {
         return tempoMateriaRepository.findById(id).get().getTempoTotalAcumulado();
     }
 }

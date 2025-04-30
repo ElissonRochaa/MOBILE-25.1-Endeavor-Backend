@@ -17,8 +17,20 @@ public class MateriaService {
         return materiaRepository.findAll();
     }
 
-    public Optional<Materia> buscar(String id) {
+    public Optional<Materia> buscar(Long id) {
         return materiaRepository.findById(id);
+    }
+
+    public void excluir(Long id) {
+        materiaRepository.deleteById(id);
+    }
+
+    public Materia salvar(Materia materia) {
+        return materiaRepository.save(materia);
+    }
+
+    public Materia atualizar(Materia materia) {
+        return materiaRepository.save(materia);
     }
 
 

@@ -27,7 +27,7 @@ public class TempoMateriaController {
     }
 
     @PutMapping("/pausar/{id}")
-    public ResponseEntity<TempoMateria> pausarTempoMateria(@PathVariable String id) {
+    public ResponseEntity<TempoMateria> pausarTempoMateria(@PathVariable Long id) {
         try {
             TempoMateria pausedTempoMateria = tempoMateriaService.pausarTempoMateria(id);
             return ResponseEntity.ok().body(pausedTempoMateria);
@@ -37,7 +37,7 @@ public class TempoMateriaController {
     }
 
     @PutMapping("/continuar/{id}")
-    public ResponseEntity<TempoMateria> continuarTempoMateria(@PathVariable String id) {
+    public ResponseEntity<TempoMateria> continuarTempoMateria(@PathVariable Long id) {
         try {
             TempoMateria resumedTempoMateria = tempoMateriaService.continuarTempoMateria(id);
             return ResponseEntity.ok().body(resumedTempoMateria);
@@ -47,7 +47,7 @@ public class TempoMateriaController {
     }
 
     @PutMapping("/finalizar/{id}")
-    public ResponseEntity<TempoMateria> finalizarTempoMateria(@PathVariable String id) {
+    public ResponseEntity<TempoMateria> finalizarTempoMateria(@PathVariable Long id) {
         try {
             TempoMateria finishedTempoMateria = tempoMateriaService.finalizarTempoMateria(id);
             return ResponseEntity.ok().body(finishedTempoMateria);
@@ -63,7 +63,7 @@ public class TempoMateriaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TempoMateria> getById(@PathVariable String id) {
+    public ResponseEntity<TempoMateria> getById(@PathVariable Long id) {
         Optional<TempoMateria> tempoMateria = tempoMateriaService.buscar(id);
         return tempoMateria.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -71,7 +71,7 @@ public class TempoMateriaController {
 
     @GetMapping("/tempo-dia/{idMateria}")
     public ResponseEntity<Long> getTotalTempoNoDiaPorMateria(
-            @PathVariable String idMateria,
+            @PathVariable Long idMateria,
             @RequestParam String date) {
         try {
             LocalDate localDate = LocalDate.parse(date);
@@ -95,7 +95,7 @@ public class TempoMateriaController {
 
     @GetMapping("/tempo-materia/{idMateria}")
     public ResponseEntity<Long> getTotalTempoMateria(
-            @PathVariable String idMateria) {
+            @PathVariable Long idMateria) {
         try {
             Long tempo = tempoMateriaService.getTotalTempoMateria(idMateria);
             return ResponseEntity.ok().body(tempo);
@@ -106,7 +106,7 @@ public class TempoMateriaController {
 
     @GetMapping("/tempo-semana/{idMateria}")
     public ResponseEntity<Long> getTotalTempoNaSemanaPorMateria(
-            @PathVariable String idMateria) {
+            @PathVariable Long idMateria) {
         try {
             LocalDate inicioSemana = SemanaUtils.getInicioSemana(LocalDate.now());
             LocalDate fimSemana = SemanaUtils.getFimSemana(LocalDate.now());

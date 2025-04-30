@@ -9,7 +9,7 @@ public class Usuario {
 
     @Id
     @GeneratedValue
-    private String id;
+    private long id;
 
 
 }

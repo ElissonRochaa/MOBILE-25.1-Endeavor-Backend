@@ -12,10 +12,9 @@ public class Materia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private long id;
 
     @ManyToOne
-    @JoinColumn(name = "id_usuario")
     private Usuario usuario;
 
     @Column(name = "nome", nullable = false)

@@ -10,13 +10,13 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface TempoMateriaRepository extends JpaRepository<TempoMateria, String> {
+public interface TempoMateriaRepository extends JpaRepository<TempoMateria, Long> {
 
     @Query(value = "SELECT * FROM tempo_materia " +
             "WHERE id_materia = :idMateria " +
             "AND DATE(inicio) = :date",
             nativeQuery = true)
-    List<TempoMateria> getTempoMateriaNoDia(@Param("idMateria") String idMateria,
+    List<TempoMateria> getTempoMateriaNoDia(@Param("idMateria") Long idMateria,
                                             @Param("date") LocalDate date);
 
     @Query(value = "SELECT * FROM tempo_materia " +
@@ -27,14 +27,14 @@ public interface TempoMateriaRepository extends JpaRepository<TempoMateria, Stri
     @Query(value = "SELECT * FROM tempo_materia " +
             "WHERE id_materia = :idMateria",
             nativeQuery = true)
-    List<TempoMateria> getTempoMateria(@Param("idMateria") String idMateria);
+    List<TempoMateria> getTempoMateria(@Param("idMateria") Long idMateria);
 
     @Query(value = "SELECT * FROM tempo_materia " +
             "WHERE id_materia = :idMateria " +
             "AND inicio >= :inicioSemana " +
             "AND fim <= :fimSemana",
             nativeQuery = true)
-    List<TempoMateria> getTempoNaSemanaPorMateria(@Param("idMateria") String idMateria,
+    List<TempoMateria> getTempoNaSemanaPorMateria(@Param("idMateria") Long idMateria,
                                                   @Param("inicioSemana") LocalDate inicioSemana,
                                                   @Param("fimSemana") LocalDate fimSemana);
 

@@ -15,14 +15,12 @@ public class TempoMateria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private long id;
 
     @ManyToOne
-    @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
     @ManyToOne
-    @JoinColumn(name = "id_materia", nullable = false)
     private Materia materia;
 
     @Column(name = "inicio", nullable = false)
