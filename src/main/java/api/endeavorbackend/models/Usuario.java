@@ -1,9 +1,16 @@
 package api.endeavorbackend.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import api.endeavorbackend.enuns.Escolaridade;
+import jakarta.persistence.*;
+import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 public class Usuario {
 
@@ -11,5 +18,28 @@ public class Usuario {
     @GeneratedValue
     private long id;
 
+    @Column(name = "nome")
+    private String nome;
 
+    @Column(name = "email")
+    private String email;
+    
+    @Column(name = "idade")
+    private int idade;
+
+    @Enumerated(EnumType.STRING)
+    private Escolaridade escolaridade;
+
+    @Column(name = "area_estudo")
+    @ManyToOne
+    private String areaEstudo;
+    
+    @JsonIgnore
+    private String senha;
+
+    @OneToMany(mappedBy = "usuario")
+    private List<Materia> materias;
+
+    @OneToMany(mappedBy = "usuario")
+    private List<GrupoEstudo> gruposEstudo;
 }
