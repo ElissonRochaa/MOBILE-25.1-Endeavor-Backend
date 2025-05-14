@@ -5,7 +5,7 @@ import java.util.Optional;
 import api.endeavorbackend.models.Usuario;
 import api.endeavorbackend.repositorios.UsuarioRepository;
 
-public class UsuarioServiceImpl implements UsuarioServiceInterface {
+public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioRepository usuarioRepository;
 
     public UsuarioServiceImpl(UsuarioRepository usuarioRepository) {
@@ -67,6 +67,15 @@ public class UsuarioServiceImpl implements UsuarioServiceInterface {
         List<Usuario> usuarios = usuarioRepository.findByNome(nome);
         if (usuarios.isEmpty()) {
             throw new RuntimeException("Nenhum usuário encontrado com o nome: " + nome);
+        }
+        return usuarios;
+    }
+
+    @Override
+    public List<Usuario> listarUsuarios() {
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        if (usuarios.isEmpty()) {
+            throw new RuntimeException("Nenhum usuário encontrado.");
         }
         return usuarios;
     }

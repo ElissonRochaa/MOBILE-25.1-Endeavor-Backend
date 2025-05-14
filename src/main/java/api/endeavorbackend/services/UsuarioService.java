@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import api.endeavorbackend.models.Usuario;
 
 @Service
-public interface UsuarioServiceInterface {
+public interface UsuarioService {
     void cadastrarUsuario(Usuario usuario);
     Usuario buscarUsuarioPorId(Long id);
     Usuario buscarUsuarioPorEmail(String email);
@@ -15,5 +15,6 @@ public interface UsuarioServiceInterface {
     void excluirUsuario(Long id);
     boolean usuarioJaCadastrado(String email);
     List<Usuario> buscarUsuariosPorNome(String nome);
+    List<Usuario> listarUsuarios();
     
 }
