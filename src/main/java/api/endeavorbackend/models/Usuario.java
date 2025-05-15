@@ -30,9 +30,9 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     private Escolaridade escolaridade;
 
-    @Column(name = "area_estudo")
     @ManyToOne
-    private String areaEstudo;
+    @JoinColumn(name = "area_estudo")
+    private AreaEstudo areaEstudo;
     
     @JsonIgnore
     private String senha;

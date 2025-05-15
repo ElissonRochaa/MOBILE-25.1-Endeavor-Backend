@@ -1,5 +1,6 @@
 package api.endeavorbackend.repositorios;
 
+import api.endeavorbackend.enuns.StatusCronometro;
 import api.endeavorbackend.models.TempoMateria;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -47,5 +48,5 @@ public interface TempoMateriaRepository extends JpaRepository<TempoMateria, Long
                                         @Param("fimSemana") LocalDate fimSemana);
 
 
-
+    boolean existsByUsuarioIdAndMateriaIdAndStatus(Long usuarioId, Long materiaId, StatusCronometro statusCronometro);
 }

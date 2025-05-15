@@ -1,13 +1,17 @@
 package api.endeavorbackend.controllers;
 
+import api.endeavorbackend.dtos.MateriaDTO;
+import api.endeavorbackend.dtos.TempoMateriaDTO;
 import api.endeavorbackend.models.TempoMateria;
 import api.endeavorbackend.services.TempoMateriaService;
+import api.endeavorbackend.services.TempoMateriaServiceImpl;
 import api.endeavorbackend.utils.SemanaUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -20,10 +24,14 @@ public class TempoMateriaController {
         this.tempoMateriaService = tempoMateriaService;
     }
 
-    @PostMapping
-    public ResponseEntity<TempoMateria> create(@RequestBody TempoMateria tempoMateria) {
-        TempoMateria createdTempoMateria = tempoMateriaService.addTempoMateria(tempoMateria);
-        return ResponseEntity.ok().body(createdTempoMateria);
+    @PostMapping("/criar")
+    public ResponseEntity<TempoMateriaDTO> create(@RequestBody Map<String, Long> request ) {
+        Long usuarioId = request.get("usuarioId");
+        Long materiaId = request.get("materiaId");
+
+        TempoMateria createdTempoMateria = tempoMateriaService.iniciarSessao(usuarioId, materiaId);
+        TempoMateriaDTO tempoMateriaDTO = new TempoMateriaDTO(createdTempoMateria);
+        return ResponseEntity.ok().body(tempoMateriaDTO);
     }
 
     @PutMapping("/pausar/{id}")
@@ -57,15 +65,16 @@ public class TempoMateriaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TempoMateria>> listar() {
+    public ResponseEntity<List<TempoMateriaDTO>> listar() {
         List<TempoMateria> tempoMaterias = tempoMateriaService.listar();
-        return ResponseEntity.ok().body(tempoMaterias);
+        List<TempoMateriaDTO> dtoList = tempoMaterias.stream().map(TempoMateriaDTO::new).toList();
+        return ResponseEntity.ok().body(dtoList);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TempoMateria> getById(@PathVariable Long id) {
+    public ResponseEntity<TempoMateriaDTO> getById(@PathVariable Long id) {
         Optional<TempoMateria> tempoMateria = tempoMateriaService.buscar(id);
-        return tempoMateria.map(ResponseEntity::ok)
+        return tempoMateria.map(m -> ResponseEntity.ok(new TempoMateriaDTO(m)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 

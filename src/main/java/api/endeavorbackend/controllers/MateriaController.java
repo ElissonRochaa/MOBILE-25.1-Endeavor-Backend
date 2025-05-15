@@ -1,5 +1,6 @@
 package api.endeavorbackend.controllers;
 
+import api.endeavorbackend.dtos.MateriaDTO;
 import api.endeavorbackend.models.Materia;
 import api.endeavorbackend.services.MateriaService;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +20,17 @@ public class MateriaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Materia>> listar() {
+    public ResponseEntity<List<MateriaDTO>> listar() {
         List<Materia> materias = materiaService.listar();
-        return ResponseEntity.ok(materias);
+        List<MateriaDTO> dtoList = materias.stream().map(MateriaDTO::new).toList();
+        return ResponseEntity.ok(dtoList);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Materia> buscar(@PathVariable Long id) {
+    public ResponseEntity<MateriaDTO> buscar(@PathVariable Long id) {
         Optional<Materia> materia = materiaService.buscar(id);
-        return materia.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return materia.map(m -> ResponseEntity.ok(new MateriaDTO(m)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/create")

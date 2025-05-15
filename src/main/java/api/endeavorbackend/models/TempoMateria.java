@@ -18,9 +18,11 @@ public class TempoMateria {
     private long id;
 
     @ManyToOne
+    @JoinColumn(name = "usuario", nullable = false)
     private Usuario usuario;
 
     @ManyToOne
+    @JoinColumn(name = "materia", nullable = false)
     private Materia materia;
 
     @Column(name = "inicio", nullable = false)
@@ -34,7 +36,7 @@ public class TempoMateria {
     private StatusCronometro status;
 
     @Column(name = "tempo_total_acumulado", nullable = false)
-    private Long tempoTotalAcumulado;
+    private Long tempoTotalAcumulado = 0L;
 
     public Long getDuracao() {
         if (fim != null && inicio != null) {

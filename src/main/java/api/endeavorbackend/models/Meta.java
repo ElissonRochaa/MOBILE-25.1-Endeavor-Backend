@@ -1,27 +1,29 @@
 package api.endeavorbackend.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "materia")
-public class Materia {
+public class Meta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToOne
-    private Usuario usuario;
-
-    @Column(name = "nome", nullable = false)
+    @Column(name = "nome")
     private String nome;
 
-    @Column(name = "descricao", nullable = false)
+    @Column(name = "descricao")
     private String descricao;
 
-
+    @ManyToOne
+    @JoinColumn(name = "materia", nullable = false)
+    private Materia materia;
 }

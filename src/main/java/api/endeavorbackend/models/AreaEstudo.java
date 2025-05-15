@@ -2,10 +2,7 @@ package api.endeavorbackend.models;
 
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +13,7 @@ import lombok.Setter;
 @Entity
 public class AreaEstudo {
 
+    @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private long id;
 
@@ -27,6 +25,6 @@ public class AreaEstudo {
 
     @OneToMany(mappedBy = "areaEstudo")
     private List<GrupoEstudo> grupoEstudo;
-    
+
 
 }
