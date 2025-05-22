@@ -40,8 +40,16 @@ public class MateriaController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Materia> update(@RequestBody long materiaId, @RequestBody Materia materia) {
-        materiaService.buscar(materiaId);
-        return ResponseEntity.ok(materia);
+    public ResponseEntity<MateriaDTO> update(@RequestBody Materia materia) {
+        Materia atualizada = materiaService.atualizar(materia);
+        MateriaDTO dto = new MateriaDTO(atualizada);
+        return ResponseEntity.ok(dto);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        materiaService.excluir(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
