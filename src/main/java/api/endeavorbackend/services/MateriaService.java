@@ -9,6 +9,6 @@ public interface MateriaService {
     List<Materia> listar();
     Optional<Materia> buscar(Long id);
     void excluir(Long id);
-    void salvar(Materia materia);
+    Materia salvar(Materia materia);
     Materia atualizar(Materia materia);
 }

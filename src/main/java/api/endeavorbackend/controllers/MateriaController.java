@@ -35,8 +35,8 @@ public class MateriaController {
 
     @PostMapping("/create")
     public ResponseEntity<Materia> create(@RequestBody Materia materia) {
-        materiaService.salvar(materia);
-        return ResponseEntity.ok(materia);
+        Materia savedMateria = materiaService.salvar(materia);;
+        return ResponseEntity.ok(savedMateria);
     }
 
     @PutMapping("/update")
