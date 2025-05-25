@@ -8,12 +8,12 @@ import api.endeavorbackend.repositorios.MateriaRepository;
 import api.endeavorbackend.repositorios.TempoMateriaRepository;
 import api.endeavorbackend.repositorios.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceException;
 import org.springframework.stereotype.Service;
 
-import javax.management.OperationsException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,22 +35,27 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
         Materia materia = materiaRepository.findById(materiaId)
                 .orElseThrow(() -> new EntityNotFoundException("Matéria não encontrada"));
 
-        if (existeSessaoEmAndamento(usuarioId, materiaId)) {
-            throw new RuntimeException("Já existe uma sessão em andamento para este usuário e matéria.");
+        if (existeSessao(usuarioId, materiaId, StatusCronometro.EM_ANDAMENTO)) {
+            throw new IllegalStateException("Já existe uma sessão em andamento.");
         }
 
-        TempoMateria tempoMateria = new TempoMateria();
-        tempoMateria.setUsuario(usuario);
-        tempoMateria.setMateria(materia);
-        tempoMateria.setInicio(new Timestamp(System.currentTimeMillis()));
-        tempoMateria.setStatus(StatusCronometro.EM_ANDAMENTO);
-        tempoMateria.setTempoTotalAcumulado(0L);
+        if (existeSessao(usuarioId, materiaId, StatusCronometro.PAUSADO)) {
+            return continuarSessao(buscarSessaoPorUsuarioIdMateria(usuarioId, materiaId).getId());
+        }
+
+            TempoMateria tempoMateria = new TempoMateria();
+            tempoMateria.setUsuario(usuario);
+            tempoMateria.setMateria(materia);
+            tempoMateria.setInicio(new Timestamp(System.currentTimeMillis()));
+            tempoMateria.setStatus(StatusCronometro.EM_ANDAMENTO);
+            tempoMateria.setTempoTotalAcumulado(0L);
 
 
-        return tempoMateriaRepository.save(tempoMateria);
+            return tempoMateriaRepository.save(tempoMateria);
+
     }
 
-    public TempoMateria pausarTempoMateria(Long id) {
+    public TempoMateria pausarSessao(Long id) {
         Optional<TempoMateria> tempoMateriaOptional = tempoMateriaRepository.findById(id);
         if (tempoMateriaOptional.isPresent()) {
             TempoMateria tempoMateria = tempoMateriaOptional.get();
@@ -66,103 +71,59 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
         throw new RuntimeException("Sessão de estudo não encontrada.");
     }
 
-    public TempoMateria continuarTempoMateria(Long id) {
-        Optional<TempoMateria> tempoMateriaOptional = tempoMateriaRepository.findById(id);
-        if (tempoMateriaOptional.isPresent()) {
-            TempoMateria tempoMateria = tempoMateriaOptional.get();
-            if (tempoMateria.getStatus() == StatusCronometro.PAUSADO) {
-                tempoMateria.setInicio(new Timestamp(System.currentTimeMillis()));
-                tempoMateria.setStatus(StatusCronometro.EM_ANDAMENTO);
-                return tempoMateriaRepository.save(tempoMateria);
-            }
-            throw new RuntimeException("A sessão já está em andamento ou finalizada.");
+    public TempoMateria continuarSessao(Long id) {
+        TempoMateria sessao = tempoMateriaRepository.findById(id).orElseThrow(() -> new RuntimeException("Sessão não encontrada"));
+
+        if (sessao.getStatus() != StatusCronometro.PAUSADO) {
+            throw new IllegalStateException("A sessão não está pausada.");
         }
-        throw new RuntimeException("Sessão de estudo não encontrada.");
+
+        sessao.setInicio(new Timestamp(System.currentTimeMillis()));
+        sessao.setStatus(StatusCronometro.EM_ANDAMENTO);
+
+        return tempoMateriaRepository.save(sessao);
     }
 
-    //a única diferença entre esse finalizar e pausar é que depois do finalizar não tem volta. Pensando em deixar só o pausar mesmo e finalizar automático quando mudar o dia
-
-    public TempoMateria finalizarTempoMateria(Long id) {
+    public TempoMateria finalizarSessao(Long id) {
         Optional<TempoMateria> tempoMateriaOptional = tempoMateriaRepository.findById(id);
         if (tempoMateriaOptional.isPresent()) {
             TempoMateria tempoMateria = tempoMateriaOptional.get();
-            if (tempoMateria.getStatus() == StatusCronometro.EM_ANDAMENTO) {
+            if (tempoMateria.getStatus() == StatusCronometro.EM_ANDAMENTO || tempoMateria.getStatus() == StatusCronometro.PAUSADO) {
                 long tempoFinalizado = (System.currentTimeMillis() - tempoMateria.getInicio().getTime()) / 1000;
                 tempoMateria.setTempoTotalAcumulado(tempoMateria.getTempoTotalAcumulado() + tempoFinalizado);
                 tempoMateria.setFim(new Timestamp(System.currentTimeMillis()));
                 tempoMateria.setStatus(StatusCronometro.FINALIZADO);
                 return tempoMateriaRepository.save(tempoMateria);
             }
-            throw new RuntimeException("A sessão já está finalizada ou pausada.");
+            throw new RuntimeException("A sessão já está finalizada");
         }
-        throw new RuntimeException("Sessão de estudo não encontrada.");
+        throw new RuntimeException("Sessão de estudo não encontrada");
     }
 
-    public void deleteTempoMateria(TempoMateria tempoMateria) {
-        tempoMateriaRepository.delete(tempoMateria);
+    public void deleteSessao(Long id) {
+        tempoMateriaRepository.delete(buscar(id));
     }
 
     public List<TempoMateria> listar() {
         return tempoMateriaRepository.findAll();
     }
 
-    public Optional<TempoMateria> buscar(Long id) {
-        return tempoMateriaRepository.findById(id);
+    private boolean existeSessao(Long usuarioId, Long materiaId, StatusCronometro status) {
+        return tempoMateriaRepository.existsByUsuarioIdAndMateriaIdAndStatus(usuarioId, materiaId, status);
     }
 
-    public Long getTotalTempoMateria(Long idMateria) {
-        long total = 0;
-        for (TempoMateria tempoMateria : tempoMateriaRepository.getTempoMateria(idMateria)) {
-            total += tempoMateria.getTempoTotalAcumulado();
-        }
-        return total;
+    public TempoMateria buscar(Long id) {
+        return tempoMateriaRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Sessão não encontrada."));
     }
 
-    public Long getTempoNoDia(LocalDate date) {
-        long total = 0;
-        for (TempoMateria tempoMateria : tempoMateriaRepository.getTempoTotalNoDia(date)) {
-            total += tempoMateria.getTempoTotalAcumulado();
-        }
-        return total;
-    }
 
-    public Long getTempoNoDiaPorMateria(Long idMateria, LocalDate date) {
-        long total = 0;
-        for (TempoMateria tempoMateria : tempoMateriaRepository.getTempoMateriaNoDia(idMateria, date)) {
-            total += tempoMateria.getTempoTotalAcumulado();
-        }
-        return total;
-    }
+    public TempoMateria buscarSessaoPorUsuarioIdMateria(Long usuarioId, Long materiaId){
+        LocalDateTime inicioDoDia = LocalDate.now().atStartOfDay();
+        LocalDateTime fimDoDia = inicioDoDia.plusDays(1);
 
-    public Long getTempoNaSemana(LocalDate inicioSemana, LocalDate fimSemana) {
-        long total = 0;
-        for (TempoMateria tempoMateria : tempoMateriaRepository.getTempoNaSemana(inicioSemana, fimSemana)) {
-            total += tempoMateria.getTempoTotalAcumulado();
-        }
-        return total;
-    }
-
-    public Long getTempoNaSemanaPorMateria(Long idMateria, LocalDate inicioSemana, LocalDate fimSemana) {
-        long total = 0;
-        for (TempoMateria tempoMateria : tempoMateriaRepository.getTempoNaSemanaPorMateria(idMateria, inicioSemana, fimSemana)) {
-            total += tempoMateria.getTempoTotalAcumulado();
-        }
-        return total;
-    }
-
-    public Long getDuracaoSessaoEstudo(Long materia) {
-        Optional<TempoMateria> tempoMateria = tempoMateriaRepository.findById(materia);
-        return tempoMateria
-                .map(TempoMateria::getDuracao)
-                .orElseThrow(() -> new RuntimeException("Sessão de estudo não encontrada para a matéria: " + materia)); // Se não encontrar, lança a exceção
-    }
-
-    public Long getTempoTotalAcumulado(Long id) {
-        return tempoMateriaRepository.findById(id).get().getTempoTotalAcumulado();
-    }
-
-    public boolean existeSessaoEmAndamento(Long usuarioId, Long materiaId) {
-        return tempoMateriaRepository.existsByUsuarioIdAndMateriaIdAndStatus(usuarioId, materiaId, StatusCronometro.EM_ANDAMENTO);
+        List<StatusCronometro> statusList = Arrays.asList(StatusCronometro.EM_ANDAMENTO, StatusCronometro.PAUSADO);
+        return tempoMateriaRepository.getTempoMateriaByUsuarioIdAndMateriaId(usuarioId, materiaId, statusList, inicioDoDia, fimDoDia);
     }
 
 }

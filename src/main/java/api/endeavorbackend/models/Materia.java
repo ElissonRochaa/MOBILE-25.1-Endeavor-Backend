@@ -1,5 +1,6 @@
 package api.endeavorbackend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +16,7 @@ public class Materia {
     private long id;
 
     @ManyToOne
+    @JsonIgnore
     private Usuario usuario;
 
     @Column(name = "nome", nullable = false)

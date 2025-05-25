@@ -1,6 +1,7 @@
 package api.endeavorbackend.models;
 
 import api.endeavorbackend.enuns.Escolaridade;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -32,6 +33,7 @@ public class Usuario {
 
     @ManyToOne
     @JoinColumn(name = "area_estudo")
+    @JsonIgnore
     private AreaEstudo areaEstudo;
     
     @JsonIgnore

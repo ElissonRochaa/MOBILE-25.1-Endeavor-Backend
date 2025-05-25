@@ -1,37 +1,26 @@
 package api.endeavorbackend.services;
-
 import api.endeavorbackend.models.TempoMateria;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface TempoMateriaService {
+
     TempoMateria iniciarSessao(Long usuarioId, Long materiaId);
 
-    TempoMateria pausarTempoMateria(Long id);
+    TempoMateria pausarSessao(Long Id);
 
-    TempoMateria continuarTempoMateria(Long id);
+    TempoMateria continuarSessao(Long Id);
 
-    TempoMateria finalizarTempoMateria(Long id);
+    TempoMateria finalizarSessao(Long Id);
 
-    void deleteTempoMateria(TempoMateria tempoMateria);
+    TempoMateria buscar(Long tempoId);
+
+    TempoMateria buscarSessaoPorUsuarioIdMateria(Long usuarioId, Long materiaId);
 
     List<TempoMateria> listar();
 
-    Optional<TempoMateria> buscar(Long id);
+    void deleteSessao(Long id);
 
-    Long getTotalTempoMateria(Long idMateria);
 
-    Long getTempoNoDia(LocalDate date);
-
-    Long getTempoNoDiaPorMateria(Long idMateria, LocalDate date);
-
-    Long getTempoNaSemana(LocalDate inicioSemana, LocalDate fimSemana);
-
-    Long getTempoNaSemanaPorMateria(Long idMateria, LocalDate inicioSemana, LocalDate fimSemana);
-
-    Long getDuracaoSessaoEstudo(Long materia);
-
-    Long getTempoTotalAcumulado(Long id);
 }
+

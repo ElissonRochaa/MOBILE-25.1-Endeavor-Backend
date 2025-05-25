@@ -1,18 +1,13 @@
 package api.endeavorbackend.controllers;
 
-import api.endeavorbackend.dtos.MateriaDTO;
 import api.endeavorbackend.dtos.TempoMateriaDTO;
 import api.endeavorbackend.models.TempoMateria;
 import api.endeavorbackend.services.TempoMateriaService;
-import api.endeavorbackend.services.TempoMateriaServiceImpl;
-import api.endeavorbackend.utils.SemanaUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/tempo-materias")
@@ -37,7 +32,7 @@ public class TempoMateriaController {
     @PutMapping("/pausar/{id}")
     public ResponseEntity<TempoMateria> pausarTempoMateria(@PathVariable Long id) {
         try {
-            TempoMateria pausedTempoMateria = tempoMateriaService.pausarTempoMateria(id);
+            TempoMateria pausedTempoMateria = tempoMateriaService.pausarSessao(id);
             return ResponseEntity.ok().body(pausedTempoMateria);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(null);
@@ -47,7 +42,7 @@ public class TempoMateriaController {
     @PutMapping("/continuar/{id}")
     public ResponseEntity<TempoMateria> continuarTempoMateria(@PathVariable Long id) {
         try {
-            TempoMateria resumedTempoMateria = tempoMateriaService.continuarTempoMateria(id);
+            TempoMateria resumedTempoMateria = tempoMateriaService.continuarSessao(id);
             return ResponseEntity.ok().body(resumedTempoMateria);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(null);
@@ -57,7 +52,7 @@ public class TempoMateriaController {
     @PutMapping("/finalizar/{id}")
     public ResponseEntity<TempoMateria> finalizarTempoMateria(@PathVariable Long id) {
         try {
-            TempoMateria finishedTempoMateria = tempoMateriaService.finalizarTempoMateria(id);
+            TempoMateria finishedTempoMateria = tempoMateriaService.finalizarSessao(id);
             return ResponseEntity.ok().body(finishedTempoMateria);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(null);
@@ -73,68 +68,24 @@ public class TempoMateriaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<TempoMateriaDTO> getById(@PathVariable Long id) {
-        Optional<TempoMateria> tempoMateria = tempoMateriaService.buscar(id);
-        return tempoMateria.map(m -> ResponseEntity.ok(new TempoMateriaDTO(m)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        TempoMateria tempoMateria = tempoMateriaService.buscar(id);
+        TempoMateriaDTO dto = new TempoMateriaDTO(tempoMateria);
+        return ResponseEntity.ok().body(dto);
     }
 
-    @GetMapping("/tempo-dia/{idMateria}")
-    public ResponseEntity<Long> getTotalTempoNoDiaPorMateria(
-            @PathVariable Long idMateria,
-            @RequestParam String date) {
+    @GetMapping("/buscaPorUsuarioMateria")
+    public ResponseEntity<?> buscarSessaoPorUsuarioEMateria(
+            @RequestParam Long usuarioId,
+            @RequestParam Long materiaId) {
         try {
-            LocalDate localDate = LocalDate.parse(date);
-            Long tempo = tempoMateriaService.getTempoNoDiaPorMateria(idMateria, localDate);
-            return ResponseEntity.ok().body(tempo);
+            TempoMateria sessao = tempoMateriaService.buscarSessaoPorUsuarioIdMateria(usuarioId, materiaId);
+            if (sessao != null) {
+                return ResponseEntity.ok(sessao);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
-
-    @GetMapping("/tempo-dia")
-    public ResponseEntity<Long> getTotalTempoNoDia(@RequestParam String date) {
-        try {
-            LocalDate localDate = LocalDate.parse(date);
-            Long tempo = tempoMateriaService.getTempoNoDia(localDate);
-            return ResponseEntity.ok().body(tempo);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
-
-    @GetMapping("/tempo-materia/{idMateria}")
-    public ResponseEntity<Long> getTotalTempoMateria(
-            @PathVariable Long idMateria) {
-        try {
-            Long tempo = tempoMateriaService.getTotalTempoMateria(idMateria);
-            return ResponseEntity.ok().body(tempo);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
-
-    @GetMapping("/tempo-semana/{idMateria}")
-    public ResponseEntity<Long> getTotalTempoNaSemanaPorMateria(
-            @PathVariable Long idMateria) {
-        try {
-            LocalDate inicioSemana = SemanaUtils.getInicioSemana(LocalDate.now());
-            LocalDate fimSemana = SemanaUtils.getFimSemana(LocalDate.now());
-            Long tempo = tempoMateriaService.getTempoNaSemanaPorMateria(idMateria, inicioSemana, fimSemana);
-            return ResponseEntity.ok().body(tempo);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
-
-    @GetMapping("/tempo-semana")
-    public ResponseEntity<Long> getTotalTempoNaSemana() {
-        try {
-            LocalDate inicioSemana = SemanaUtils.getInicioSemana(LocalDate.now());
-            LocalDate fimSemana = SemanaUtils.getFimSemana(LocalDate.now());
-            Long tempo = tempoMateriaService.getTempoNaSemana(inicioSemana, fimSemana);
-            return ResponseEntity.ok().body(tempo);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body("Erro ao buscar sessão: " + e.getMessage());
         }
     }
 }
