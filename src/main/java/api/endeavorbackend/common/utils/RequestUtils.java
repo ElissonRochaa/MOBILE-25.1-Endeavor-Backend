@@ -13,19 +13,4 @@ public class RequestUtils {
         return request.getRequestURL() + (request.getQueryString() != null ? "?" + request.getQueryString() : "");
     }
 
-    public static ResponseEntity<ExceptionBody> buildErrorResponse(
-            HttpStatus status, String error, String message, HttpServletRequest req) {
-
-        var body = ExceptionBody.builder()
-                .httpStatus(status.value())
-                .error(error)
-                .message(message)
-                .request(RequestUtils.getFullRequestURL(req))
-                .timeStamp(Instant.now())
-                .build();
-
-        return ResponseEntity.status(status).body(body);
-    }
-
-
 }
