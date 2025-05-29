@@ -1,9 +1,20 @@
 package api.endeavorbackend.models;
 
 import api.endeavorbackend.enuns.Escolaridade;
+import api.endeavorbackend.enuns.Role;
 import jakarta.persistence.*;
+
+import java.util.Collection;
 import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -11,8 +22,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
-public class Usuario {
+@EqualsAndHashCode(of = "id")
+public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue
@@ -42,4 +55,37 @@ public class Usuario {
 
     @OneToMany(mappedBy = "usuario")
     private List<GrupoEstudo> gruposEstudo;
+
+    @Column(name = "role")
+    private Role role;
+
+    public Usuario(String nome, String email, String senha, int idade, Escolaridade escolaridade, AreaEstudo areaEstudo, Role role) {
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.idade = idade;
+        this.escolaridade = escolaridade;
+        this.areaEstudo = areaEstudo;
+        this.role = role;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (this.role == Role.ADMIN) {
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), 
+                           new SimpleGrantedAuthority("ROLE_USER"));
+        } else {
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        }
+    }
+
+    @Override
+    public String getPassword() {
+        return this.senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
 }

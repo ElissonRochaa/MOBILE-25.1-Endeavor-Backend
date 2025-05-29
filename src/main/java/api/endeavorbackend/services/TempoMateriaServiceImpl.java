@@ -8,10 +8,7 @@ import api.endeavorbackend.repositorios.MateriaRepository;
 import api.endeavorbackend.repositorios.TempoMateriaRepository;
 import api.endeavorbackend.repositorios.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceException;
 import org.springframework.stereotype.Service;
-
-import javax.management.OperationsException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;

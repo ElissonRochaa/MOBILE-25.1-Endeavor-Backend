@@ -1,10 +1,8 @@
 package api.endeavorbackend.controllers;
 
-import api.endeavorbackend.dtos.MateriaDTO;
 import api.endeavorbackend.dtos.TempoMateriaDTO;
 import api.endeavorbackend.models.TempoMateria;
 import api.endeavorbackend.services.TempoMateriaService;
-import api.endeavorbackend.services.TempoMateriaServiceImpl;
 import api.endeavorbackend.utils.SemanaUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

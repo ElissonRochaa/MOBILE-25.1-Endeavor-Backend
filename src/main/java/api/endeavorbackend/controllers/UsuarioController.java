@@ -55,16 +55,6 @@ public class UsuarioController {
         }
     }
 
-    @GetMapping("/{email}")
-    ResponseEntity<Usuario> buscarUsuarioPorEmail(@PathVariable String email) {
-        try {
-            Usuario usuario = usuarioService.buscarUsuarioPorEmail(email);
-            return ResponseEntity.ok(usuario);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
-
     @PutMapping("/atualizar")
     ResponseEntity<Usuario> atualizarUsuario(@RequestBody Usuario usuario) {
         try {

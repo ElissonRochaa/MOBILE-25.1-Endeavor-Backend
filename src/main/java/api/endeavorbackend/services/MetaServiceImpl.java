@@ -1,6 +1,5 @@
 package api.endeavorbackend.services;
 
-import api.endeavorbackend.models.Materia;
 import api.endeavorbackend.models.Meta;
 import api.endeavorbackend.repositorios.MateriaRepository;
 import api.endeavorbackend.repositorios.MetaRepository;

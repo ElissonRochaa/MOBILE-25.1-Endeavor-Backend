@@ -30,16 +30,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Usuario buscarUsuarioPorEmail(String email) {
-        Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
-        if (usuario.isPresent()) {
-            return usuario.get();
-        } else {
-            throw new RuntimeException("Usuário não encontrado com o email: " + email);
-        }
-    }
-
-    @Override
     public void atualizarUsuario(Usuario usuario) {
         Optional<Usuario> usuarioExistente = usuarioRepository.findById(usuario.getId());
         if (usuarioExistente.isPresent()) {
