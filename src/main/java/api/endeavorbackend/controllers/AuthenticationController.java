@@ -14,6 +14,7 @@ import api.endeavorbackend.config.TokenService;
 import api.endeavorbackend.dtos.AuthenticationDTO;
 import api.endeavorbackend.dtos.LoginResponseDTO;
 import api.endeavorbackend.dtos.UsuarioDTO;
+import api.endeavorbackend.enuns.Role;
 import api.endeavorbackend.models.Usuario;
 import api.endeavorbackend.repositorios.UsuarioRepository;
 
@@ -46,6 +47,12 @@ public class AuthenticationController {
             return ResponseEntity.badRequest().body("Email já cadastrado");
         }
 
+        if (usuarioDTO.nome() == null || usuarioDTO.email() == null || usuarioDTO.senha() == null || usuarioDTO.escolaridade() == null || usuarioDTO.areaEstudo() == null) {
+            return ResponseEntity.badRequest().body("Nome, email, senha, escolaridade e área de estudo são obrigatórios");
+        }
+
+
+
         String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDTO.senha());
         Usuario usuario = new Usuario(
                 usuarioDTO.nome(),
@@ -54,7 +61,7 @@ public class AuthenticationController {
                 usuarioDTO.idade(),
                 usuarioDTO.escolaridade(),
                 usuarioDTO.areaEstudo(),
-                usuarioDTO.role()
+                Role.USER
         );
 
         this.usuarioRepository.save(usuario);

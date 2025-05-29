@@ -45,6 +45,7 @@ public class Usuario implements UserDetails {
 
     @ManyToOne
     @JoinColumn(name = "area_estudo")
+    @JsonIgnore
     private AreaEstudo areaEstudo;
     
     @JsonIgnore

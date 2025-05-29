@@ -2,7 +2,9 @@ package api.endeavorbackend.controllers;
 
 import api.endeavorbackend.dtos.MateriaDTO;
 import api.endeavorbackend.models.Materia;
+import api.endeavorbackend.models.Usuario;
 import api.endeavorbackend.services.MateriaService;
+import api.endeavorbackend.services.UsuarioService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,9 +16,11 @@ import java.util.Optional;
 public class MateriaController {
 
     private final MateriaService materiaService;
+    private final UsuarioService usuarioService;
 
-    public MateriaController(MateriaService materiaService) {
+    public MateriaController(MateriaService materiaService, UsuarioService usuarioService) {
         this.materiaService = materiaService;
+        this.usuarioService = usuarioService;
     }
 
     @GetMapping
@@ -34,9 +38,15 @@ public class MateriaController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Materia> create(@RequestBody Materia materia) {
-        materiaService.salvar(materia);
-        return ResponseEntity.ok(materia);
+    public ResponseEntity<MateriaDTO> create(@RequestBody MateriaDTO dto) {
+        Usuario usuario = usuarioService.buscarUsuarioPorId(dto.getUsuarioId());
+        Materia materia = new Materia();
+        materia.setNome(dto.getNome());
+        materia.setDescricao(dto.getDescricao());
+        materia.setUsuario(usuario);
+
+        Materia saved = materiaService.salvar(materia);
+        return ResponseEntity.ok(new MateriaDTO(saved));
     }
 
     @PutMapping("/update")

@@ -25,8 +25,8 @@ public class MateriaServiceImpl implements MateriaService {
         materiaRepository.deleteById(id);
     }
 
-    public void salvar(Materia materia) {
-        materiaRepository.save(materia);
+    public Materia salvar(Materia materia) {
+        return materiaRepository.save(materia);
     }
 
     public Materia atualizar(Materia materia) {

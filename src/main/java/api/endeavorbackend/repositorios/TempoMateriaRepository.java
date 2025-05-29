@@ -8,45 +8,71 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface TempoMateriaRepository extends JpaRepository<TempoMateria, Long> {
 
-    @Query(value = "SELECT * FROM tempo_materia " +
-            "WHERE id_materia = :idMateria " +
-            "AND DATE(inicio) = :date",
-            nativeQuery = true)
-    List<TempoMateria> getTempoMateriaNoDia(@Param("idMateria") Long idMateria,
-                                            @Param("date") LocalDate date);
+    @Query("SELECT t FROM TempoMateria t " +
+            "WHERE t.materia.id = :idMateria " +
+            "AND t.usuario.id = :usuarioId " +
+            "AND FUNCTION('DATE', t.inicio) = :date")
+    List<TempoMateria> findByMateriaAndUsuarioAndDate(
+            @Param("idMateria") Long idMateria,
+            @Param("usuarioId") Long usuarioId,
+            @Param("date") LocalDate date
+    );
 
-    @Query(value = "SELECT * FROM tempo_materia " +
-            "WHERE DATE(inicio) = :date ",
-            nativeQuery = true)
-    List<TempoMateria> getTempoTotalNoDia(@Param("date") LocalDate date);
+    @Query("SELECT t FROM TempoMateria t " +
+            "WHERE t.usuario.id = :usuarioId " +
+            "AND FUNCTION('DATE', t.inicio) = :date")
+    List<TempoMateria> findByUsuarioAndDate(
+            @Param("usuarioId") Long usuarioId,
+            @Param("date") LocalDate date
+    );
 
-    @Query(value = "SELECT * FROM tempo_materia " +
-            "WHERE id_materia = :idMateria",
-            nativeQuery = true)
-    List<TempoMateria> getTempoMateria(@Param("idMateria") Long idMateria);
+    @Query("SELECT t FROM TempoMateria t " +
+            "WHERE t.materia.id = :idMateria " +
+            "AND t.usuario.id = :usuarioId")
+    List<TempoMateria> findByMateriaAndUsuario(
+            @Param("idMateria") Long idMateria,
+            @Param("usuarioId") Long usuarioId
+    );
 
-    @Query(value = "SELECT * FROM tempo_materia " +
-            "WHERE id_materia = :idMateria " +
-            "AND inicio >= :inicioSemana " +
-            "AND fim <= :fimSemana",
-            nativeQuery = true)
-    List<TempoMateria> getTempoNaSemanaPorMateria(@Param("idMateria") Long idMateria,
-                                                  @Param("inicioSemana") LocalDate inicioSemana,
-                                                  @Param("fimSemana") LocalDate fimSemana);
+    @Query("SELECT t FROM TempoMateria t " +
+            "WHERE t.materia.id = :idMateria " +
+            "AND t.usuario.id = :usuarioId " +
+            "AND t.inicio >= :inicioSemana " +
+            "AND t.fim <= :fimSemana")
+    List<TempoMateria> findByMateriaAndUsuarioAndSemana(
+            @Param("idMateria") Long idMateria,
+            @Param("usuarioId") Long usuarioId,
+            @Param("inicioSemana") LocalDateTime inicioSemana,
+            @Param("fimSemana") LocalDateTime fimSemana
+    );
 
-
-    @Query(value = "SELECT * FROM tempo_materia " +
-            "WHERE inicio >= :inicioSemana " +
-            "AND fim <= :fimSemana",
-            nativeQuery = true)
-    List<TempoMateria> getTempoNaSemana(@Param("inicioSemana") LocalDate inicioSemana,
-                                        @Param("fimSemana") LocalDate fimSemana);
-
+    @Query("SELECT t FROM TempoMateria t " +
+            "WHERE t.usuario.id = :usuarioId " +
+            "AND t.inicio >= :inicioSemana " +
+            "AND t.fim <= :fimSemana")
+    List<TempoMateria> findByUsuarioAndSemana(
+            @Param("usuarioId") Long usuarioId,
+            @Param("inicioSemana") LocalDateTime inicioSemana,
+            @Param("fimSemana") LocalDateTime fimSemana
+    );
 
     boolean existsByUsuarioIdAndMateriaIdAndStatus(Long usuarioId, Long materiaId, StatusCronometro statusCronometro);
+
+    @Query("SELECT t FROM TempoMateria t " +
+            "WHERE t.usuario.id = :usuarioId " +
+            "AND t.materia.id = :materiaId " +
+            "AND t.status IN (:statuses) " +
+            "AND t.inicio >= :inicioDoDia " +
+            "AND t.inicio < :fimDoDia")
+    TempoMateria getTempoMateriaByUsuarioIdAndMateriaId(@Param("usuarioId") Long usuarioId,
+                                                        @Param("materiaId") Long materiaId,
+                                                        @Param("statuses") List<StatusCronometro> statuses,
+                                                        @Param("inicioDoDia") LocalDateTime inicioDoDia,
+                                                        @Param("fimDoDia") LocalDateTime fimDoDia);
 }
