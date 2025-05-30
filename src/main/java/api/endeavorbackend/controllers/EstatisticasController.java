@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -69,9 +70,11 @@ public class EstatisticasController {
     public ResponseEntity<List<Long>> getTempoEvolucao(
             @RequestParam UUID usuarioId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim
-    ) {
-        List<Long> lista = estatisticaService.getEvolucaoSemanal(usuarioId, inicio, fim);
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim,
+            @RequestParam ChronoUnit unidade,
+            @RequestParam int intervalo
+            ) {
+        List<Long> lista = estatisticaService.getEvolucaoPorPeriodo(usuarioId, inicio, fim, unidade, intervalo);
         return ResponseEntity.ok(lista);
     }
 
