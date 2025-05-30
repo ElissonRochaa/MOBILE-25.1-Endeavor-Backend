@@ -36,30 +36,11 @@ public class UsuarioController {
         }
     }
     
-    @PostMapping("/cadastrar")
-    public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody Usuario usuario) {
-        try {
-            usuarioService.cadastrarUsuario(usuario);
-            return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-    }
 
     @GetMapping("/{id}")
     ResponseEntity<Usuario> buscarUsuarioPorId(@PathVariable UUID id) {
         try {
             Usuario usuario = usuarioService.buscarUsuarioPorId(id);
-            return ResponseEntity.ok(usuario);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
-
-    @GetMapping("/{email}")
-    ResponseEntity<Usuario> buscarUsuarioPorEmail(@PathVariable String email) {
-        try {
-            Usuario usuario = usuarioService.buscarUsuarioPorEmail(email);
             return ResponseEntity.ok(usuario);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

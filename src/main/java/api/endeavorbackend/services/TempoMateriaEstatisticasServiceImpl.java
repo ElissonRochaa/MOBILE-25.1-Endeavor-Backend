@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import api.endeavorbackend.models.TempoMateria;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -58,4 +60,40 @@ public class TempoMateriaEstatisticasServiceImpl implements TempoMateriaEstatist
                 .mapToLong(TempoMateria::getTempoTotalAcumulado)
                 .sum();
     }
+
+    public List<Long> getEvolucaoSemanal(UUID usuarioId, LocalDate inicio, LocalDate fim) {
+        List<Long> evolucao = new ArrayList<>();
+        LocalDate semanaInicio = inicio;
+
+        while (!semanaInicio.isAfter(fim)) {
+            LocalDate semanaFim = semanaInicio.plusDays(6);
+            if (semanaFim.isAfter(fim)) {
+                semanaFim = fim;
+            }
+            long tempo = getTempoNaSemana(usuarioId, semanaInicio, semanaFim);
+            evolucao.add(tempo);
+            semanaInicio = semanaFim.plusDays(1);
+        }
+
+        return evolucao;
+    }
+
+    public int getDiasConsecutivosDeEstudo(UUID usuarioId, long tempoMinimoDiarioSegundos) {
+        LocalDate hoje = LocalDate.now();
+        int diasConsecutivos = 0;
+
+        while (true) {
+            LocalDate dia = hoje.minusDays(diasConsecutivos);
+            long tempoNoDia = getTempoTotalNoDia(usuarioId, dia);
+            if (tempoNoDia >= tempoMinimoDiarioSegundos) {
+                diasConsecutivos++;
+            } else {
+                break;
+            }
+        }
+
+        return diasConsecutivos;
+    }
+
+
 }

@@ -1,22 +1,26 @@
 package api.endeavorbackend.models;
 
 import api.endeavorbackend.models.enuns.Escolaridade;
+import api.endeavorbackend.models.enuns.Role;
 import jakarta.persistence.*;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 
 @NoArgsConstructor
 @Entity
 @AllArgsConstructor
 @Getter @Setter
-public class Usuario {
+public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -52,4 +56,37 @@ public class Usuario {
             inverseJoinColumns = @JoinColumn(name = "grupo_de_estudo_id")
     )
     private Set<GrupoDeEstudo> gruposParticipando;
+
+    @Column(name = "role")
+    private Role role;
+
+    public Usuario(String nome, String email, String senha, int idade, Escolaridade escolaridade, AreaEstudo areaEstudo, Role role) {
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.idade = idade;
+        this.escolaridade = escolaridade;
+        this.areaEstudo = areaEstudo;
+        this.role = role;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (this.role == Role.ADMIN) {
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"),
+                           new SimpleGrantedAuthority("ROLE_USER"));
+        } else {
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        }
+    }
+
+    @Override
+    public String getPassword() {
+        return this.senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
 }

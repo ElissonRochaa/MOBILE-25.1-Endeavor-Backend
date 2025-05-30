@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -62,5 +63,24 @@ public class EstatisticasController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim) {
         long tempo = estatisticaService.getTempoNaSemanaPorMateria(usuarioId, materiaId, inicio, fim);
         return ResponseEntity.ok(tempo);
+    }
+
+    @GetMapping("/semana/evolucao")
+    public ResponseEntity<List<Long>> getTempoEvolucao(
+            @RequestParam UUID usuarioId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim
+    ) {
+        List<Long> lista = estatisticaService.getEvolucaoSemanal(usuarioId, inicio, fim);
+        return ResponseEntity.ok(lista);
+    }
+
+    @GetMapping("/foguinho")
+    public ResponseEntity<Integer> getTempoFoguinho(
+            @RequestParam UUID usuarioId,
+            @RequestParam Long tempoMinimoDiario
+    ) {
+        Integer strike = estatisticaService.getDiasConsecutivosDeEstudo(usuarioId, tempoMinimoDiario);
+        return ResponseEntity.ok(strike);
     }
 }
