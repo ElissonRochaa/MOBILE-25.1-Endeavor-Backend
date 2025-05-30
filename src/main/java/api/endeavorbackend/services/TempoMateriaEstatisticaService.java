@@ -1,6 +1,7 @@
 package api.endeavorbackend.services;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface TempoMateriaEstatisticaService {
 
@@ -13,5 +14,9 @@ public interface TempoMateriaEstatisticaService {
     long getTempoNaSemana(Long usuarioId, LocalDate inicioSemana, LocalDate fimSemana);
 
     long getTempoNaSemanaPorMateria(Long usuarioId, Long materiaId, LocalDate inicioSemana, LocalDate fimSemana);
+
+    List<Long> getEvolucaoSemanal(Long usuarioId, LocalDate inicio, LocalDate fim);
+
+    int getDiasConsecutivosDeEstudo(Long usuarioId, long tempoMinimoDiarioSegundos);
 }
 
