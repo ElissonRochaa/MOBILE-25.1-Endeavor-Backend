@@ -10,7 +10,6 @@ public record UsuarioDTO(
     String senha,
     int idade,
     Escolaridade escolaridade,
-    AreaEstudo areaEstudo,
     Role role
 ) {}
 

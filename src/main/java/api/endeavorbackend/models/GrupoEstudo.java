@@ -1,5 +1,7 @@
 package api.endeavorbackend.models;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +27,9 @@ public class GrupoEstudo {
     @ManyToOne
     @JoinColumn(name = "usuario")
     private Usuario usuario;
+
+    @OneToMany
+    private List<ConviteGrupo> convites;
 
 
 

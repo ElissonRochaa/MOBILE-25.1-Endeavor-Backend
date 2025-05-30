@@ -60,13 +60,12 @@ public class Usuario implements UserDetails {
     @Column(name = "role")
     private Role role;
 
-    public Usuario(String nome, String email, String senha, int idade, Escolaridade escolaridade, AreaEstudo areaEstudo, Role role) {
+    public Usuario(String nome, String email, String senha, int idade, Escolaridade escolaridade, Role role) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
         this.idade = idade;
         this.escolaridade = escolaridade;
-        this.areaEstudo = areaEstudo;
         this.role = role;
     }
 
