@@ -47,7 +47,7 @@ public class AuthenticationController {
             return ResponseEntity.badRequest().body("Email já cadastrado");
         }
 
-        if (usuarioDTO.nome() == null || usuarioDTO.email() == null || usuarioDTO.senha() == null || usuarioDTO.escolaridade() == null || usuarioDTO.areaEstudo() == null) {
+        if (usuarioDTO.nome() == null || usuarioDTO.email() == null || usuarioDTO.senha() == null || usuarioDTO.escolaridade() == null) {
             return ResponseEntity.badRequest().body("Nome, email, senha, escolaridade e área de estudo são obrigatórios");
         }
 
@@ -60,7 +60,6 @@ public class AuthenticationController {
                 senhaCriptografada,
                 usuarioDTO.idade(),
                 usuarioDTO.escolaridade(),
-                usuarioDTO.areaEstudo(),
                 Role.USER
         );
 
