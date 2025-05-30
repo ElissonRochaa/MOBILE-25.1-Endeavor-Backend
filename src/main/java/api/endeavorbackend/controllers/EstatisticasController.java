@@ -1,5 +1,6 @@
 package api.endeavorbackend.controllers;
 
+import api.endeavorbackend.models.DTOs.EvolucaoDTO;
 import api.endeavorbackend.services.TempoMateriaEstatisticaService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -67,14 +68,14 @@ public class EstatisticasController {
     }
 
     @GetMapping("/semana/evolucao")
-    public ResponseEntity<List<Long>> getTempoEvolucao(
+    public ResponseEntity<List<EvolucaoDTO>> getTempoEvolucao(
             @RequestParam UUID usuarioId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim,
             @RequestParam ChronoUnit unidade,
             @RequestParam int intervalo
             ) {
-        List<Long> lista = estatisticaService.getEvolucaoPorPeriodo(usuarioId, inicio, fim, unidade, intervalo);
+        List<EvolucaoDTO> lista = estatisticaService.getEvolucaoPorPeriodo(usuarioId, inicio, fim, unidade, intervalo);
         return ResponseEntity.ok(lista);
     }
 

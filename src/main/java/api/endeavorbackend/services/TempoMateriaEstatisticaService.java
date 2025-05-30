@@ -1,5 +1,7 @@
 package api.endeavorbackend.services;
 
+import api.endeavorbackend.models.DTOs.EvolucaoDTO;
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -17,7 +19,7 @@ public interface TempoMateriaEstatisticaService {
 
     long getTempoNaSemanaPorMateria(UUID usuarioId, UUID materiaId, LocalDate inicioSemana, LocalDate fimSemana);
 
-    List<Long> getEvolucaoPorPeriodo(UUID usuarioId, LocalDate inicio, LocalDate fim, ChronoUnit unidade, int intervalo);
+    List<EvolucaoDTO> getEvolucaoPorPeriodo(UUID usuarioId, LocalDate inicio, LocalDate fim, ChronoUnit unidade, int intervalo);
 
     int getDiasConsecutivosDeEstudo(UUID usuarioId, long tempoMinimoDiarioSegundos);
 }

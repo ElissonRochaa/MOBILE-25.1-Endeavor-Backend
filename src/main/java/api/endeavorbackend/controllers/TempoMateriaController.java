@@ -80,11 +80,8 @@ public class TempoMateriaController {
             @RequestParam UUID materiaId) {
         try {
             TempoMateria sessao = tempoMateriaService.buscarSessaoPorUsuarioIdMateria(usuarioId, materiaId);
-            if (sessao != null) {
-                return ResponseEntity.ok(sessao);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
+            TempoMateriaDTO sessaoDTO = new TempoMateriaDTO(sessao);
+            return ResponseEntity.ok(sessaoDTO);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Erro ao buscar sessão: " + e.getMessage());
         }

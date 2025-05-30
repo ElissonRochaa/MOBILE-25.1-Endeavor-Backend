@@ -1,14 +1,17 @@
 package api.endeavorbackend.services;
 
+import api.endeavorbackend.models.DTOs.EvolucaoDTO;
 import api.endeavorbackend.repositorios.TempoMateriaRepository;
 import org.springframework.stereotype.Service;
 import api.endeavorbackend.models.TempoMateria;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.time.DayOfWeek;
 
 @Service
 public class TempoMateriaEstatisticasServiceImpl implements TempoMateriaEstatisticaService {
@@ -62,29 +65,46 @@ public class TempoMateriaEstatisticasServiceImpl implements TempoMateriaEstatist
                 .sum();
     }
 
-    public List<Long> getEvolucaoPorPeriodo(UUID usuarioId, LocalDate inicio, LocalDate fim, ChronoUnit unidade, int intervalo) {
-        List<Long> evolucao = new ArrayList<>();
+
+    public List<EvolucaoDTO> getEvolucaoPorPeriodo(UUID usuarioId, LocalDate inicio, LocalDate fim, ChronoUnit unidade, int intervalo) {
+        List<EvolucaoDTO> evolucao = new ArrayList<>();
+
+        if (unidade == ChronoUnit.WEEKS) {
+            LocalDate segunda = inicio.with(DayOfWeek.MONDAY);
+            LocalDate domingo = segunda.plusDays(6);
+
+            for (LocalDate dia = segunda; !dia.isAfter(domingo); dia = dia.plusDays(1)) {
+                long tempo = getTempoNaSemana(usuarioId, dia, dia);
+                evolucao.add(new EvolucaoDTO(dia, tempo));
+            }
+
+            return evolucao;
+        }
+
         LocalDate atual = inicio;
 
         while (!atual.isAfter(fim)) {
-            LocalDate subFim = switch (unidade) {
-                case DAYS -> atual.plusDays(intervalo - 1);
-                case WEEKS -> atual.plusWeeks(intervalo - 1);
-                case MONTHS -> atual.plusMonths(intervalo - 1);
+            LocalDate subFim;
+
+            switch (unidade) {
+                case DAYS -> subFim = atual;
+                case MONTHS -> {
+                    YearMonth ym = YearMonth.from(atual).plusMonths(intervalo - 1);
+                    subFim = ym.atEndOfMonth();
+                }
                 default -> throw new IllegalArgumentException("Unidade de tempo não suportada: " + unidade);
-            };
+            }
 
             if (subFim.isAfter(fim)) {
                 subFim = fim;
             }
 
             long tempo = getTempoNaSemana(usuarioId, atual, subFim);
-            evolucao.add(tempo);
+            evolucao.add(new EvolucaoDTO(atual, tempo));
 
             atual = switch (unidade) {
                 case DAYS -> atual.plusDays(intervalo);
-                case WEEKS -> atual.plusWeeks(intervalo);
-                case MONTHS -> atual.plusMonths(intervalo);
+                case MONTHS -> atual.plusMonths(intervalo).withDayOfMonth(1);
                 default -> atual;
             };
         }
