@@ -1,23 +1,26 @@
 package api.endeavorbackend.models;
 
-import api.endeavorbackend.enuns.Escolaridade;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import api.endeavorbackend.models.enuns.Escolaridade;
 import jakarta.persistence.*;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
 @NoArgsConstructor
 @Entity
+@AllArgsConstructor
+@Getter @Setter
 public class Usuario {
 
     @Id
-    @GeneratedValue
-    private long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "nome")
     private String nome;
@@ -42,6 +45,11 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario")
     private List<Materia> materias;
 
-    @OneToMany(mappedBy = "usuario")
-    private List<GrupoEstudo> gruposEstudo;
+    @ManyToMany
+    @JoinTable(
+            name = "usuario_grupo_estudo",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "grupo_de_estudo_id")
+    )
+    private Set<GrupoDeEstudo> gruposParticipando;
 }

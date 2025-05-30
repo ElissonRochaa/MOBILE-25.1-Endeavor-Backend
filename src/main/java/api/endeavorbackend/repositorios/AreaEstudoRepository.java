@@ -2,11 +2,10 @@ package api.endeavorbackend.repositorios;
 
 import api.endeavorbackend.models.AreaEstudo;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
-@Repository
-public interface AreaEstudoRepository extends JpaRepository<AreaEstudo, Long> {
-
+public interface AreaEstudoRepository extends JpaRepository<AreaEstudo, UUID> {
+    List<AreaEstudo> findByNomeContainingIgnoreCase(String nome);
 }

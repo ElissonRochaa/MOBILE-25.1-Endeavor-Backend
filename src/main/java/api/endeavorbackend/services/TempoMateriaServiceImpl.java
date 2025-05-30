@@ -1,6 +1,6 @@
 package api.endeavorbackend.services;
 
-import api.endeavorbackend.enuns.StatusCronometro;
+import api.endeavorbackend.models.enuns.StatusCronometro;
 import api.endeavorbackend.models.Materia;
 import api.endeavorbackend.models.TempoMateria;
 import api.endeavorbackend.models.Usuario;
@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class TempoMateriaServiceImpl implements TempoMateriaService {
@@ -29,7 +30,7 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
         this.materiaRepository = materiaRepository;
     }
 
-    public TempoMateria iniciarSessao(Long usuarioId, Long materiaId) throws RuntimeException {
+    public TempoMateria iniciarSessao(UUID usuarioId, UUID materiaId) throws RuntimeException {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
         Materia materia = materiaRepository.findById(materiaId)
@@ -55,7 +56,7 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
 
     }
 
-    public TempoMateria pausarSessao(Long id) {
+    public TempoMateria pausarSessao(UUID id) {
         Optional<TempoMateria> tempoMateriaOptional = tempoMateriaRepository.findById(id);
         if (tempoMateriaOptional.isPresent()) {
             TempoMateria tempoMateria = tempoMateriaOptional.get();
@@ -71,7 +72,7 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
         throw new RuntimeException("Sessão de estudo não encontrada.");
     }
 
-    public TempoMateria continuarSessao(Long id) {
+    public TempoMateria continuarSessao(UUID id) {
         TempoMateria sessao = tempoMateriaRepository.findById(id).orElseThrow(() -> new RuntimeException("Sessão não encontrada"));
 
         if (sessao.getStatus() != StatusCronometro.PAUSADO) {
@@ -84,7 +85,7 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
         return tempoMateriaRepository.save(sessao);
     }
 
-    public TempoMateria finalizarSessao(Long id) {
+    public TempoMateria finalizarSessao(UUID id) {
         Optional<TempoMateria> tempoMateriaOptional = tempoMateriaRepository.findById(id);
         if (tempoMateriaOptional.isPresent()) {
             TempoMateria tempoMateria = tempoMateriaOptional.get();
@@ -100,7 +101,7 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
         throw new RuntimeException("Sessão de estudo não encontrada");
     }
 
-    public void deleteSessao(Long id) {
+    public void deleteSessao(UUID id) {
         tempoMateriaRepository.delete(buscar(id));
     }
 
@@ -108,17 +109,17 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
         return tempoMateriaRepository.findAll();
     }
 
-    private boolean existeSessao(Long usuarioId, Long materiaId, StatusCronometro status) {
+    private boolean existeSessao(UUID usuarioId, UUID materiaId, StatusCronometro status) {
         return tempoMateriaRepository.existsByUsuarioIdAndMateriaIdAndStatus(usuarioId, materiaId, status);
     }
 
-    public TempoMateria buscar(Long id) {
+    public TempoMateria buscar(UUID id) {
         return tempoMateriaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Sessão não encontrada."));
     }
 
 
-    public TempoMateria buscarSessaoPorUsuarioIdMateria(Long usuarioId, Long materiaId){
+    public TempoMateria buscarSessaoPorUsuarioIdMateria(UUID usuarioId, UUID materiaId){
         LocalDateTime inicioDoDia = LocalDate.now().atStartOfDay();
         LocalDateTime fimDoDia = inicioDoDia.plusDays(1);
 

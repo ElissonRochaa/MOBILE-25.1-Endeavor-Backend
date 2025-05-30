@@ -1,6 +1,6 @@
-package api.endeavorbackend.dtos;
+package api.endeavorbackend.models.DTOs;
 
-import api.endeavorbackend.enuns.StatusCronometro;
+import api.endeavorbackend.models.enuns.StatusCronometro;
 import api.endeavorbackend.models.TempoMateria;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,15 +8,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 public class TempoMateriaDTO {
-    private long id;
-    private Long usuarioId;
-    private Long materiaId;
+    private UUID id;
+    private UUID usuarioId;
+    private UUID materiaId;
     private Timestamp inicio;
     private Timestamp fim;
     private StatusCronometro status;

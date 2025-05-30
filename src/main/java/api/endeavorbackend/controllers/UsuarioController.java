@@ -1,6 +1,7 @@
 package api.endeavorbackend.controllers;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +47,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Usuario> buscarUsuarioPorId(@PathVariable Long id) {
+    ResponseEntity<Usuario> buscarUsuarioPorId(@PathVariable UUID id) {
         try {
             Usuario usuario = usuarioService.buscarUsuarioPorId(id);
             return ResponseEntity.ok(usuario);
@@ -76,7 +77,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<String> excluirUsuario(@PathVariable Long id) {
+    ResponseEntity<String> excluirUsuario(@PathVariable UUID id) {
         try {
             usuarioService.excluirUsuario(id);
             return ResponseEntity.ok("Usuário excluído com sucesso.");

@@ -2,6 +2,8 @@ package api.endeavorbackend.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+
 import api.endeavorbackend.models.Usuario;
 import api.endeavorbackend.repositorios.UsuarioRepository;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Usuario buscarUsuarioPorId(Long id) {
+    public Usuario buscarUsuarioPorId(UUID id) {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
         if (usuario.isPresent()) {
             return usuario.get();
@@ -50,7 +52,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public void excluirUsuario(Long id) {
+    public void excluirUsuario(UUID id) {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
         if (usuario.isPresent()) {
             usuarioRepository.delete(usuario.get());

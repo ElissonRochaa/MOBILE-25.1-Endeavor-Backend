@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/metas")
@@ -23,7 +24,7 @@ public class MetaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Meta> getMetasById(@PathVariable final long id) {
+    public ResponseEntity<Meta> getMetasById(@PathVariable final UUID id) {
         Meta meta = metaService.buscarMeta(id);
         return ResponseEntity.ok(meta);
     }
@@ -41,7 +42,7 @@ public class MetaController {
     }
 
     @DeleteMapping("/excluir/{id}")
-    public ResponseEntity<Meta> excluirMeta(@PathVariable Long id) {
+    public ResponseEntity<Meta> excluirMeta(@PathVariable UUID id) {
         metaService.removerMeta(id);
         return ResponseEntity.noContent().build();
     }

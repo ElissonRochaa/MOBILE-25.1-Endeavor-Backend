@@ -8,17 +8,18 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
+
 @Service
 public class MetaServiceImpl implements MetaService {
     private MetaRepository metaRepository;
-    private MateriaRepository materiaRepository;
 
     public MetaServiceImpl(MetaRepository metaRepository) {
         this.metaRepository = metaRepository;
     }
 
     @Override
-    public Meta buscarMeta(Long id) {
+    public Meta buscarMeta(UUID id) {
         if (metaRepository.findById(id).isPresent()) {
             return metaRepository.findById(id).get();
         } else {
@@ -49,7 +50,7 @@ public class MetaServiceImpl implements MetaService {
     }
 
     @Override
-    public void removerMeta(Long id) {
+    public void removerMeta(UUID id) {
         if (metaRepository.findById(id).isPresent()) {
             metaRepository.deleteById(id);
         } else {

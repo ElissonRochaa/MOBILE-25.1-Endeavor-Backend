@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class MateriaServiceImpl implements MateriaService {
@@ -17,11 +18,11 @@ public class MateriaServiceImpl implements MateriaService {
         return materiaRepository.findAll();
     }
 
-    public Optional<Materia> buscar(Long id) {
+    public Optional<Materia> buscar(UUID id) {
         return materiaRepository.findById(id);
     }
 
-    public void excluir(Long id) {
+    public void excluir(UUID id) {
         materiaRepository.deleteById(id);
     }
 

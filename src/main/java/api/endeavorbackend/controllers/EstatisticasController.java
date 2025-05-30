@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/estatisticas")
@@ -21,15 +22,15 @@ public class EstatisticasController {
 
     @GetMapping("/materia")
     public ResponseEntity<Long> getTempoTotalPorMateria(
-            @RequestParam Long usuarioId,
-            @RequestParam Long materiaId) {
+            @RequestParam UUID usuarioId,
+            @RequestParam UUID materiaId) {
         long tempo = estatisticaService.getTempoTotalPorMateria(usuarioId, materiaId);
         return ResponseEntity.ok(tempo);
     }
 
     @GetMapping("/dia")
     public ResponseEntity<Long> getTempoTotalNoDia(
-            @RequestParam Long usuarioId,
+            @RequestParam UUID usuarioId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
         long tempo = estatisticaService.getTempoTotalNoDia(usuarioId, data);
         return ResponseEntity.ok(tempo);
@@ -37,8 +38,8 @@ public class EstatisticasController {
 
     @GetMapping("/dia/materia")
     public ResponseEntity<Long> getTempoTotalNoDiaPorMateria(
-            @RequestParam Long usuarioId,
-            @RequestParam Long materiaId,
+            @RequestParam UUID usuarioId,
+            @RequestParam UUID materiaId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
         long tempo = estatisticaService.getTempoTotalNoDiaPorMateria(usuarioId, materiaId, data);
         return ResponseEntity.ok(tempo);
@@ -46,7 +47,7 @@ public class EstatisticasController {
 
     @GetMapping("/semana")
     public ResponseEntity<Long> getTempoNaSemana(
-            @RequestParam Long usuarioId,
+            @RequestParam UUID usuarioId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim) {
         long tempo = estatisticaService.getTempoNaSemana(usuarioId, inicio, fim);
@@ -55,8 +56,8 @@ public class EstatisticasController {
 
     @GetMapping("/semana/materia")
     public ResponseEntity<Long> getTempoNaSemanaPorMateria(
-            @RequestParam Long usuarioId,
-            @RequestParam Long materiaId,
+            @RequestParam UUID usuarioId,
+            @RequestParam UUID materiaId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim) {
         long tempo = estatisticaService.getTempoNaSemanaPorMateria(usuarioId, materiaId, inicio, fim);

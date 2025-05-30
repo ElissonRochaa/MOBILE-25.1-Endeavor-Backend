@@ -2,24 +2,25 @@ package api.endeavorbackend.services;
 import api.endeavorbackend.models.TempoMateria;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface TempoMateriaService {
 
-    TempoMateria iniciarSessao(Long usuarioId, Long materiaId);
+    TempoMateria iniciarSessao(UUID usuarioId, UUID materiaId);
 
-    TempoMateria pausarSessao(Long Id);
+    TempoMateria pausarSessao(UUID Id);
 
-    TempoMateria continuarSessao(Long Id);
+    TempoMateria continuarSessao(UUID Id);
 
-    TempoMateria finalizarSessao(Long Id);
+    TempoMateria finalizarSessao(UUID Id);
 
-    TempoMateria buscar(Long tempoId);
+    TempoMateria buscar(UUID tempoId);
 
-    TempoMateria buscarSessaoPorUsuarioIdMateria(Long usuarioId, Long materiaId);
+    TempoMateria buscarSessaoPorUsuarioIdMateria(UUID usuarioId, UUID materiaId);
 
     List<TempoMateria> listar();
 
-    void deleteSessao(Long id);
+    void deleteSessao(UUID id);
 
 
 }

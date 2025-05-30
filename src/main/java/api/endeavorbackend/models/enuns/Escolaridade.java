@@ -1,4 +1,4 @@
-package api.endeavorbackend.enuns;
+package api.endeavorbackend.models.enuns;
 
 public enum Escolaridade {
     ENSINO_FUNDAMENTAL,

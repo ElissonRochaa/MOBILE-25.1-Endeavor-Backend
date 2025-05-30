@@ -1,6 +1,6 @@
 package api.endeavorbackend.controllers;
 
-import api.endeavorbackend.dtos.MateriaDTO;
+import api.endeavorbackend.models.DTOs.MateriaDTO;
 import api.endeavorbackend.models.Materia;
 import api.endeavorbackend.models.Usuario;
 import api.endeavorbackend.services.MateriaService;
@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/materias")
@@ -31,7 +32,7 @@ public class MateriaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MateriaDTO> buscar(@PathVariable Long id) {
+    public ResponseEntity<MateriaDTO> buscar(@PathVariable UUID id) {
         Optional<Materia> materia = materiaService.buscar(id);
         return materia.map(m -> ResponseEntity.ok(new MateriaDTO(m)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -57,7 +58,7 @@ public class MateriaController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         materiaService.excluir(id);
         return ResponseEntity.noContent().build();
     }

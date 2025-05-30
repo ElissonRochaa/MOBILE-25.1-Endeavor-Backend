@@ -6,26 +6,25 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-public class Meta {
-
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "checklist")
+public class Checklist {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "nome")
-    private String nome;
-
-    @Column(name = "descricao")
     private String descricao;
 
+    private LocalDateTime dataFazer;
+
     @ManyToOne
-    @JoinColumn(name = "materia", nullable = false)
+    @JoinColumn(name = "materia_id", nullable = false)
     private Materia materia;
 }

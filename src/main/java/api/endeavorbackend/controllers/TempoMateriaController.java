@@ -1,6 +1,6 @@
 package api.endeavorbackend.controllers;
 
-import api.endeavorbackend.dtos.TempoMateriaDTO;
+import api.endeavorbackend.models.DTOs.TempoMateriaDTO;
 import api.endeavorbackend.models.TempoMateria;
 import api.endeavorbackend.services.TempoMateriaService;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/tempo-materias")
@@ -20,9 +21,9 @@ public class TempoMateriaController {
     }
 
     @PostMapping("/criar")
-    public ResponseEntity<TempoMateriaDTO> create(@RequestBody Map<String, Long> request ) {
-        Long usuarioId = request.get("usuarioId");
-        Long materiaId = request.get("materiaId");
+    public ResponseEntity<TempoMateriaDTO> create(@RequestBody Map<String, UUID> request ) {
+        UUID usuarioId = request.get("usuarioId");
+        UUID materiaId = request.get("materiaId");
 
         TempoMateria createdTempoMateria = tempoMateriaService.iniciarSessao(usuarioId, materiaId);
         TempoMateriaDTO tempoMateriaDTO = new TempoMateriaDTO(createdTempoMateria);
@@ -30,7 +31,7 @@ public class TempoMateriaController {
     }
 
     @PutMapping("/pausar/{id}")
-    public ResponseEntity<TempoMateria> pausarTempoMateria(@PathVariable Long id) {
+    public ResponseEntity<TempoMateria> pausarTempoMateria(@PathVariable UUID id) {
         try {
             TempoMateria pausedTempoMateria = tempoMateriaService.pausarSessao(id);
             return ResponseEntity.ok().body(pausedTempoMateria);
@@ -40,7 +41,7 @@ public class TempoMateriaController {
     }
 
     @PutMapping("/continuar/{id}")
-    public ResponseEntity<TempoMateria> continuarTempoMateria(@PathVariable Long id) {
+    public ResponseEntity<TempoMateria> continuarTempoMateria(@PathVariable UUID id) {
         try {
             TempoMateria resumedTempoMateria = tempoMateriaService.continuarSessao(id);
             return ResponseEntity.ok().body(resumedTempoMateria);
@@ -50,7 +51,7 @@ public class TempoMateriaController {
     }
 
     @PutMapping("/finalizar/{id}")
-    public ResponseEntity<TempoMateria> finalizarTempoMateria(@PathVariable Long id) {
+    public ResponseEntity<TempoMateria> finalizarTempoMateria(@PathVariable UUID id) {
         try {
             TempoMateria finishedTempoMateria = tempoMateriaService.finalizarSessao(id);
             return ResponseEntity.ok().body(finishedTempoMateria);
@@ -67,7 +68,7 @@ public class TempoMateriaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TempoMateriaDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<TempoMateriaDTO> getById(@PathVariable UUID id) {
         TempoMateria tempoMateria = tempoMateriaService.buscar(id);
         TempoMateriaDTO dto = new TempoMateriaDTO(tempoMateria);
         return ResponseEntity.ok().body(dto);
@@ -75,8 +76,8 @@ public class TempoMateriaController {
 
     @GetMapping("/buscaPorUsuarioMateria")
     public ResponseEntity<?> buscarSessaoPorUsuarioEMateria(
-            @RequestParam Long usuarioId,
-            @RequestParam Long materiaId) {
+            @RequestParam UUID usuarioId,
+            @RequestParam UUID materiaId) {
         try {
             TempoMateria sessao = tempoMateriaService.buscarSessaoPorUsuarioIdMateria(usuarioId, materiaId);
             if (sessao != null) {
