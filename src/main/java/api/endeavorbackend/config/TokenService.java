@@ -21,6 +21,8 @@ public class TokenService {
     public String generateToken(Usuario usuario) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
+
+            System.out.println("Gerando token JWT para o usuário: " + usuario.getEmail());
             String token = JWT.create()
                               .withIssuer("Api-Endeavor")
                               .withSubject(usuario.getEmail())
@@ -38,11 +40,18 @@ public class TokenService {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
 
-            return JWT.require(algorithm)
+
+            var email = JWT.require(algorithm)
                       .withIssuer("Api-Endeavor")
                       .build()
                       .verify(token)
                       .getSubject();
+
+            System.out.println("Token válido para o usuário: " + email);
+            if (email == null || email.isEmpty()) {
+                throw new JWTVerificationException("Token inválido: usuário não encontrado");
+            }
+            return email;
 
         } catch (JWTVerificationException exception) {
             return "";
