@@ -64,6 +64,10 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
             }
         }
 
+        if (!tempoMateriaRepository.getTempoMateriaByStatus(StatusCronometro.EM_ANDAMENTO).isEmpty()){
+            throw new IllegalStateException("Já existe uma matéria em andamento");
+        }
+
             TempoMateria tempoMateria = new TempoMateria();
             tempoMateria.setUsuario(usuario);
             tempoMateria.setMateria(materia);
@@ -97,6 +101,10 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
 
         if (sessao.getStatus() != StatusCronometro.PAUSADO) {
             throw new IllegalStateException("A sessão não está pausada.");
+        }
+
+        if (!tempoMateriaRepository.getTempoMateriaByStatus(StatusCronometro.EM_ANDAMENTO).isEmpty()){
+            throw new IllegalStateException("Já existe uma matéria em andamento");
         }
 
         sessao.setInicio(new Timestamp(System.currentTimeMillis()));
