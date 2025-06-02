@@ -49,7 +49,7 @@ public class TempoMateriaEstatisticasServiceImpl implements TempoMateriaEstatist
                         fimSemana.atTime(23, 59, 59)
                 )
                 .stream()
-                .mapToLong(TempoMateria::getTempoTotalAcumulado)
+                .mapToLong(TempoMateria::getTempoTotalAcumulado).map(tempo -> tempo / (60 * 60))
                 .sum();
     }
 
@@ -74,7 +74,7 @@ public class TempoMateriaEstatisticasServiceImpl implements TempoMateriaEstatist
             LocalDate domingo = segunda.plusDays(6);
 
             for (LocalDate dia = segunda; !dia.isAfter(domingo); dia = dia.plusDays(1)) {
-                long tempo = getTempoNaSemana(usuarioId, dia, dia);
+                Long tempo = getTempoNaSemana(usuarioId, dia, dia);
                 evolucao.add(new EvolucaoDTO(dia, tempo));
             }
 

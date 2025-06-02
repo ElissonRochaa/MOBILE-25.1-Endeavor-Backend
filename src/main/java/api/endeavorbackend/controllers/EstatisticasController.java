@@ -67,7 +67,7 @@ public class EstatisticasController {
         return ResponseEntity.ok(tempo);
     }
 
-    @GetMapping("/semana/evolucao")
+    @GetMapping("/evolucao")
     public ResponseEntity<List<EvolucaoDTO>> getTempoEvolucao(
             @RequestParam UUID usuarioId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,

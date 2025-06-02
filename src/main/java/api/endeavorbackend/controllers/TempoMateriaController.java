@@ -3,11 +3,13 @@ package api.endeavorbackend.controllers;
 import api.endeavorbackend.models.DTOs.TempoMateriaDTO;
 import api.endeavorbackend.models.TempoMateria;
 import api.endeavorbackend.services.TempoMateriaService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -31,30 +33,33 @@ public class TempoMateriaController {
     }
 
     @PutMapping("/pausar/{id}")
-    public ResponseEntity<TempoMateria> pausarTempoMateria(@PathVariable UUID id) {
+    public ResponseEntity<TempoMateriaDTO> pausarTempoMateria(@PathVariable UUID id) {
         try {
             TempoMateria pausedTempoMateria = tempoMateriaService.pausarSessao(id);
-            return ResponseEntity.ok().body(pausedTempoMateria);
+            TempoMateriaDTO tempoMateriaDTO = new TempoMateriaDTO(pausedTempoMateria);
+            return ResponseEntity.ok().body(tempoMateriaDTO);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(null);
         }
     }
 
     @PutMapping("/continuar/{id}")
-    public ResponseEntity<TempoMateria> continuarTempoMateria(@PathVariable UUID id) {
+    public ResponseEntity<TempoMateriaDTO> continuarTempoMateria(@PathVariable UUID id) {
         try {
             TempoMateria resumedTempoMateria = tempoMateriaService.continuarSessao(id);
-            return ResponseEntity.ok().body(resumedTempoMateria);
+            TempoMateriaDTO tempoMateriaDTO = new TempoMateriaDTO(resumedTempoMateria);
+            return ResponseEntity.ok().body(tempoMateriaDTO);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(null);
         }
     }
 
     @PutMapping("/finalizar/{id}")
-    public ResponseEntity<TempoMateria> finalizarTempoMateria(@PathVariable UUID id) {
+    public ResponseEntity<TempoMateriaDTO> finalizarTempoMateria(@PathVariable UUID id) {
         try {
             TempoMateria finishedTempoMateria = tempoMateriaService.finalizarSessao(id);
-            return ResponseEntity.ok().body(finishedTempoMateria);
+            TempoMateriaDTO tempoMateriaDTO = new TempoMateriaDTO(finishedTempoMateria);
+            return ResponseEntity.ok().body(tempoMateriaDTO);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -80,6 +85,27 @@ public class TempoMateriaController {
             @RequestParam UUID materiaId) {
         try {
             TempoMateria sessao = tempoMateriaService.buscarSessaoPorUsuarioIdMateria(usuarioId, materiaId);
+            if (sessao == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sessão não encontrada.");
+            }
+
+            TempoMateriaDTO sessaoDTO = new TempoMateriaDTO(sessao);
+            return ResponseEntity.ok(sessaoDTO);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erro ao buscar sessão: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/buscaPorUsuarioMateriaAtiva")
+    public ResponseEntity<?> buscarSessaoPorUsuarioEMateriaAtiva(
+            @RequestParam UUID usuarioId,
+            @RequestParam UUID materiaId) {
+        try {
+            TempoMateria sessao = tempoMateriaService.buscarSessaoPorUsuarioIdMateriaAtiva(usuarioId, materiaId);
+            if (sessao == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sessão não encontrada.");
+            }
+
             TempoMateriaDTO sessaoDTO = new TempoMateriaDTO(sessao);
             return ResponseEntity.ok(sessaoDTO);
         } catch (Exception e) {
