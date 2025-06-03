@@ -18,4 +18,5 @@ public interface GrupoDeEstudoService {
     List<GrupoDeEstudoDTO> getByAreaEstudo(UUID areaEstudoId);
     GrupoDeEstudoDTO adicionarUsuarioAoGrupo(UUID grupoId, UUID usuarioId);
     GrupoDeEstudoDTO removerUsuarioDoGrupo(UUID grupoId, UUID usuarioId);
+    String conviteGrupo(UUID grupoId);
 }
