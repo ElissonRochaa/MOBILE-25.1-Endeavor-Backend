@@ -31,8 +31,6 @@ public class GrupoDeEstudoServiceImpl implements GrupoDeEstudoService{
     public GrupoDeEstudoDTO create(CriacaoGrupoDeEstudoDTO dto) {
         AreaEstudo area = areaRepository.findById(dto.areaEstudoId())
                 .orElseThrow(AreaEstudoNaoEncontradaException::new);
-//        Usuario criador = usuarioRepository.findById(dto.usuarioCriadorId())
-//                .orElseThrow(() -> new RuntimeException("Usuário criador não encontrado"));
         Usuario criador = new Usuario();
         GrupoDeEstudo grupo = new GrupoDeEstudo();
         grupo.setTitulo(dto.titulo());
@@ -48,6 +46,12 @@ public class GrupoDeEstudoServiceImpl implements GrupoDeEstudoService{
 
     public List<GrupoDeEstudoDTO> getAll() {
         return grupoRepository.findAll().stream().map(GrupoDeEstudoDTO::from).toList();
+    }
+
+    @Override
+    public List<GrupoDeEstudoDTO> getAllFromUsuario(UUID usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow();
+        return grupoRepository.findByParticipantesContains(usuario).stream().map(GrupoDeEstudoDTO::from).toList();
     }
 
     public GrupoDeEstudo getById(UUID id) {

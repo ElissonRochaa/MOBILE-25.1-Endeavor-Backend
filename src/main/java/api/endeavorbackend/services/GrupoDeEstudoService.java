@@ -18,4 +18,6 @@ public interface GrupoDeEstudoService {
     List<GrupoDeEstudoDTO> getByAreaEstudo(UUID areaEstudoId);
     GrupoDeEstudoDTO adicionarUsuarioAoGrupo(UUID grupoId, UUID usuarioId);
     GrupoDeEstudoDTO removerUsuarioDoGrupo(UUID grupoId, UUID usuarioId);
+
+    List<GrupoDeEstudoDTO> getAllFromUsuario(UUID usuarioId);
 }
