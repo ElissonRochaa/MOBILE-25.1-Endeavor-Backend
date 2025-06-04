@@ -8,6 +8,7 @@ import api.endeavorbackend.repositorios.MateriaRepository;
 import api.endeavorbackend.repositorios.TempoMateriaRepository;
 import api.endeavorbackend.repositorios.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import java.time.ZoneId;
 
@@ -64,7 +65,7 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
             }
         }
 
-        if (!tempoMateriaRepository.getTempoMateriaByStatus(StatusCronometro.EM_ANDAMENTO).isEmpty()){
+        if (!tempoMateriaRepository.getTempoMateriaByStatusAndUsuarioId(StatusCronometro.EM_ANDAMENTO, usuarioId).isEmpty()){
             throw new IllegalStateException("Já existe uma matéria em andamento");
         }
 
@@ -103,7 +104,7 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
             throw new IllegalStateException("A sessão não está pausada.");
         }
 
-        if (!tempoMateriaRepository.getTempoMateriaByStatus(StatusCronometro.EM_ANDAMENTO).isEmpty()){
+        if (!tempoMateriaRepository.getTempoMateriaByStatusAndUsuarioId(StatusCronometro.EM_ANDAMENTO, sessao.getUsuario().getId()).isEmpty()){
             throw new IllegalStateException("Já existe uma matéria em andamento");
         }
 
@@ -131,6 +132,15 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
 
     public void deleteSessao(UUID id) {
         tempoMateriaRepository.delete(buscar(id));
+    }
+
+    @Override
+    public List<TempoMateria> buscarPorStatusUsuario(StatusCronometro status, UUID usuarioId) {
+        if (tempoMateriaRepository.getTempoMateriaByStatusAndUsuarioId(status, usuarioId).isEmpty()){
+            throw new RuntimeException("Não existe sessão com esse status para esse usuário");
+        } else {
+            return tempoMateriaRepository.getTempoMateriaByStatusAndUsuarioId(status, usuarioId);
+        }
     }
 
     public List<TempoMateria> listar() {
