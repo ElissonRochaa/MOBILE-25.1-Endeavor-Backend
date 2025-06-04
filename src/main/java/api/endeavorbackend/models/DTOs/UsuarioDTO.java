@@ -1,18 +1,24 @@
 package api.endeavorbackend.models.DTOs;
 
+import api.endeavorbackend.models.Usuario;
 import api.endeavorbackend.models.enuns.Escolaridade;
-import api.endeavorbackend.models.enuns.Role;
-import api.endeavorbackend.models.AreaEstudo;
-import jakarta.validation.Valid;
-import org.springframework.validation.annotation.Validated;
+
+
+import java.util.UUID;
 
 public record UsuarioDTO(
-    String nome,
-    String email,
-    String senha,
-    int idade,
-    Escolaridade escolaridade,
-    AreaEstudo areaEstudo,
-    Role role
-) {}
-
+        UUID id,
+        String nome,
+        String email,
+        int idade,
+        Escolaridade escolaridade
+                 ) {
+    public static UsuarioDTO from(Usuario usuario) {
+        return new UsuarioDTO(
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getEmail(),
+                usuario.getIdade(),
+                usuario.getEscolaridade()
+        );
+}}

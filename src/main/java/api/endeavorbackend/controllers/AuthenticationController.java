@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import api.endeavorbackend.config.TokenService;
 import api.endeavorbackend.models.DTOs.AuthenticationDTO;
 import api.endeavorbackend.models.DTOs.LoginResponseDTO;
-import api.endeavorbackend.models.DTOs.UsuarioDTO;
+import api.endeavorbackend.models.DTOs.RegistroDTO;
 import api.endeavorbackend.models.enuns.Role;
 import api.endeavorbackend.models.Usuario;
 import api.endeavorbackend.repositorios.UsuarioRepository;
@@ -42,24 +42,24 @@ public class AuthenticationController {
     }
 
     @RequestMapping("/registro")
-    public ResponseEntity<String> register(@RequestBody @Valid UsuarioDTO usuarioDTO) {
-        if (this.usuarioRepository.findByEmail(usuarioDTO.email()) != null) {
+    public ResponseEntity<String> register(@RequestBody @Valid RegistroDTO registroDTO) {
+        if (this.usuarioRepository.findByEmail(registroDTO.email()) != null) {
             return ResponseEntity.badRequest().body("Email já cadastrado");
         }
 
-        if (usuarioDTO.nome() == null || usuarioDTO.email() == null || usuarioDTO.senha() == null || usuarioDTO.escolaridade() == null) {
+        if (registroDTO.nome() == null || registroDTO.email() == null || registroDTO.senha() == null || registroDTO.escolaridade() == null) {
             return ResponseEntity.badRequest().body("Nome, email, senha, escolaridade e área de estudo são obrigatórios");
         }
 
 
 
-        String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDTO.senha());
+        String senhaCriptografada = new BCryptPasswordEncoder().encode(registroDTO.senha());
         Usuario usuario = new Usuario(
-                usuarioDTO.nome(),
-                usuarioDTO.email(),
+                registroDTO.nome(),
+                registroDTO.email(),
                 senhaCriptografada,
-                usuarioDTO.idade(),
-                usuarioDTO.escolaridade(),
+                registroDTO.idade(),
+                registroDTO.escolaridade(),
                 Role.USER
         );
 
