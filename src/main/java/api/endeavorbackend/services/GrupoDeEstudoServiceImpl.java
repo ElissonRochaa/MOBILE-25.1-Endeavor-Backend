@@ -3,6 +3,8 @@ package api.endeavorbackend.services;
 import api.endeavorbackend.models.*;
 import api.endeavorbackend.models.DTOs.CriacaoGrupoDeEstudoDTO;
 import api.endeavorbackend.models.DTOs.GrupoDeEstudoDTO;
+import api.endeavorbackend.models.DTOs.RegistroDTO;
+import api.endeavorbackend.models.DTOs.UsuarioDTO;
 import api.endeavorbackend.models.exceptions.areaEstudo.AreaEstudoNaoEncontradaException;
 import api.endeavorbackend.models.exceptions.grupoEstudo.GrupoEstudoNaoEncontradoException;
 import api.endeavorbackend.repositorios.AreaEstudoRepository;
@@ -31,16 +33,19 @@ public class GrupoDeEstudoServiceImpl implements GrupoDeEstudoService{
     public GrupoDeEstudoDTO create(CriacaoGrupoDeEstudoDTO dto) {
         AreaEstudo area = areaRepository.findById(dto.areaEstudoId())
                 .orElseThrow(AreaEstudoNaoEncontradaException::new);
-        Usuario criador = new Usuario();
+        Usuario criador = usuarioRepository.findById(dto.usuarioCriadorId()).orElseThrow();
         GrupoDeEstudo grupo = new GrupoDeEstudo();
         grupo.setTitulo(dto.titulo());
         grupo.setDescricao(dto.descricao());
         grupo.setCapacidade(dto.capacidade());
         grupo.setPrivado(dto.privado());
         grupo.setAreaEstudo(area);
+
         grupo.setParticipantes(Set.of(criador));
+        criador.getGruposParticipando().add(grupo);
 
         GrupoDeEstudo saved = grupoRepository.save(grupo);
+
         return GrupoDeEstudoDTO.from(saved);
     }
 
@@ -50,8 +55,16 @@ public class GrupoDeEstudoServiceImpl implements GrupoDeEstudoService{
 
     @Override
     public List<GrupoDeEstudoDTO> getAllFromUsuario(UUID usuarioId) {
+        System.out.println(usuarioId);
         Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow();
+        System.out.println(usuario);
         return grupoRepository.findByParticipantesContains(usuario).stream().map(GrupoDeEstudoDTO::from).toList();
+    }
+
+    @Override
+    public List<UsuarioDTO> getMembrosFromGrupo(UUID grupoId) {
+        GrupoDeEstudo grupo = grupoRepository.findById(grupoId).orElseThrow(GrupoEstudoNaoEncontradoException::new);
+        return grupo.getParticipantes().stream().map(UsuarioDTO::from).toList();
     }
 
     public GrupoDeEstudo getById(UUID id) {
