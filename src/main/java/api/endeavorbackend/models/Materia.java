@@ -28,7 +28,6 @@ public class Materia {
     @Column(name = "descricao", nullable = false)
     private String descricao;
 
-
     @OneToMany(mappedBy = "materia", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Checklist> checklists = new HashSet<>();
 

@@ -2,6 +2,7 @@ package api.endeavorbackend.services;
 import api.endeavorbackend.models.TempoMateria;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface TempoMateriaService {
@@ -17,6 +18,8 @@ public interface TempoMateriaService {
     TempoMateria buscar(UUID tempoId);
 
     TempoMateria buscarSessaoPorUsuarioIdMateria(UUID usuarioId, UUID materiaId);
+
+    TempoMateria buscarSessaoPorUsuarioIdMateriaAtiva(UUID usuarioId, UUID materiaId);
 
     List<TempoMateria> listar();
 

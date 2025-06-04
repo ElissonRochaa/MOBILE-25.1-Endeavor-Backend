@@ -68,12 +68,22 @@ public interface TempoMateriaRepository extends JpaRepository<TempoMateria, UUID
     @Query("SELECT t FROM TempoMateria t " +
             "WHERE t.usuario.id = :usuarioId " +
             "AND t.materia.id = :materiaId " +
+            "AND t.status IN (:statuses) ")
+    TempoMateria getTempoMateriaByUsuarioIdAndMateriaId(@Param("usuarioId") UUID usuarioId,
+                                                        @Param("materiaId") UUID materiaId,
+                                                        @Param("statuses") List<StatusCronometro> statuses);
+
+    @Query("SELECT t FROM TempoMateria t " +
+            "WHERE t.usuario.id = :usuarioId " +
+            "AND t.materia.id = :materiaId " +
             "AND t.status IN (:statuses) " +
             "AND t.inicio >= :inicioDoDia " +
             "AND t.inicio < :fimDoDia")
-    TempoMateria getTempoMateriaByUsuarioIdAndMateriaId(@Param("usuarioId") UUID usuarioId,
-                                                        @Param("materiaId") UUID materiaId,
-                                                        @Param("statuses") List<StatusCronometro> statuses,
-                                                        @Param("inicioDoDia") LocalDateTime inicioDoDia,
-                                                        @Param("fimDoDia") LocalDateTime fimDoDia);
+    TempoMateria getTempoMateriaByUsuarioIdAndMateriaIdAtiva(@Param("usuarioId") UUID usuarioId,
+                                                            @Param("materiaId") UUID materiaId,
+                                                            @Param("statuses") List<StatusCronometro> statuses,
+                                                            @Param("inicioDoDia") LocalDateTime inicioDoDia,
+                                                            @Param("fimDoDia") LocalDateTime fimDoDia);
+
+    List<TempoMateria> getTempoMateriaByStatus(StatusCronometro statusCronometro);
 }

@@ -41,7 +41,7 @@ public class TempoMateria {
 
     public Long getDuracao() {
         if (fim != null && inicio != null) {
-            return (fim.getTime() - inicio.getTime()) / 1000 + tempoTotalAcumulado; // Adiciona o tempo total acumulado
+            return (fim.getTime() - inicio.getTime()) / 1000 + tempoTotalAcumulado;
         }
         return tempoTotalAcumulado;
     }

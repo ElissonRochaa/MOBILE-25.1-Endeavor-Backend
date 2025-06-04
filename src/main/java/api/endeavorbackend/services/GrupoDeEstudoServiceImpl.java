@@ -118,4 +118,10 @@ public class GrupoDeEstudoServiceImpl implements GrupoDeEstudoService{
 
         return GrupoDeEstudoDTO.from(grupo);
     }
+
+    @Override
+    public String conviteGrupo(UUID grupoId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'conviteGrupo'");
+    }
 }

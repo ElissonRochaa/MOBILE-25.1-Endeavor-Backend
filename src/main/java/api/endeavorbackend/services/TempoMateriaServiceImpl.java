@@ -9,6 +9,7 @@ import api.endeavorbackend.repositorios.TempoMateriaRepository;
 import api.endeavorbackend.repositorios.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import java.time.ZoneId;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -31,17 +32,40 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
     }
 
     public TempoMateria iniciarSessao(UUID usuarioId, UUID materiaId) throws RuntimeException {
+
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
         Materia materia = materiaRepository.findById(materiaId)
                 .orElseThrow(() -> new EntityNotFoundException("Matéria não encontrada"));
 
-        if (existeSessao(usuarioId, materiaId, StatusCronometro.EM_ANDAMENTO)) {
-            throw new IllegalStateException("Já existe uma sessão em andamento.");
+        if (existeSessao(usuarioId, materiaId, StatusCronometro.EM_ANDAMENTO )) {
+            TempoMateria sessao = buscarSessaoPorUsuarioIdMateria(usuarioId, materiaId);
+
+            LocalDate inicioLocalDate = sessao.getInicio().toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+            if (inicioLocalDate.isBefore(LocalDate.now())) {
+                finalizarSessao(sessao.getId());
+            } else {
+                throw new IllegalStateException("Já existe uma sessão em andamento.");
+            }
         }
 
-        if (existeSessao(usuarioId, materiaId, StatusCronometro.PAUSADO)) {
+        if (existeSessao(usuarioId, materiaId, StatusCronometro.PAUSADO )) {
+            TempoMateria sessao = buscarSessaoPorUsuarioIdMateria(usuarioId, materiaId);
+
+            LocalDate inicioLocalDate = sessao.getInicio().toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+            if (inicioLocalDate.isBefore(LocalDate.now())) {
+                finalizarSessao(sessao.getId());
+            } else {
             return continuarSessao(buscarSessaoPorUsuarioIdMateria(usuarioId, materiaId).getId());
+            }
+        }
+
+        if (!tempoMateriaRepository.getTempoMateriaByStatus(StatusCronometro.EM_ANDAMENTO).isEmpty()){
+            throw new IllegalStateException("Já existe uma matéria em andamento");
         }
 
             TempoMateria tempoMateria = new TempoMateria();
@@ -77,6 +101,10 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
 
         if (sessao.getStatus() != StatusCronometro.PAUSADO) {
             throw new IllegalStateException("A sessão não está pausada.");
+        }
+
+        if (!tempoMateriaRepository.getTempoMateriaByStatus(StatusCronometro.EM_ANDAMENTO).isEmpty()){
+            throw new IllegalStateException("Já existe uma matéria em andamento");
         }
 
         sessao.setInicio(new Timestamp(System.currentTimeMillis()));
@@ -120,11 +148,17 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
 
 
     public TempoMateria buscarSessaoPorUsuarioIdMateria(UUID usuarioId, UUID materiaId){
-        LocalDateTime inicioDoDia = LocalDate.now().atStartOfDay();
-        LocalDateTime fimDoDia = inicioDoDia.plusDays(1);
 
         List<StatusCronometro> statusList = Arrays.asList(StatusCronometro.EM_ANDAMENTO, StatusCronometro.PAUSADO);
-        return tempoMateriaRepository.getTempoMateriaByUsuarioIdAndMateriaId(usuarioId, materiaId, statusList, inicioDoDia, fimDoDia);
+
+        return tempoMateriaRepository.getTempoMateriaByUsuarioIdAndMateriaId(usuarioId, materiaId, statusList);
+    }
+
+    public TempoMateria buscarSessaoPorUsuarioIdMateriaAtiva(UUID usuarioId, UUID materiaId){
+
+        List<StatusCronometro> statusList = Arrays.asList(StatusCronometro.EM_ANDAMENTO, StatusCronometro.PAUSADO);
+
+        return tempoMateriaRepository.getTempoMateriaByUsuarioIdAndMateriaId(usuarioId, materiaId, statusList);
     }
 
 }
