@@ -1,14 +1,13 @@
 package api.endeavorbackend.services;
 
 import api.endeavorbackend.models.*;
-import api.endeavorbackend.models.DTOs.CriacaoGrupoDeEstudoDTO;
-import api.endeavorbackend.models.DTOs.GrupoDeEstudoDTO;
-import api.endeavorbackend.models.DTOs.RegistroDTO;
-import api.endeavorbackend.models.DTOs.UsuarioDTO;
+import api.endeavorbackend.models.DTOs.*;
+import api.endeavorbackend.models.enuns.StatusCronometro;
 import api.endeavorbackend.models.exceptions.areaEstudo.AreaEstudoNaoEncontradaException;
 import api.endeavorbackend.models.exceptions.grupoEstudo.GrupoEstudoNaoEncontradoException;
 import api.endeavorbackend.repositorios.AreaEstudoRepository;
 import api.endeavorbackend.repositorios.GrupoDeEstudoRepository;
+import api.endeavorbackend.repositorios.TempoMateriaRepository;
 import api.endeavorbackend.repositorios.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,12 +21,14 @@ public class GrupoDeEstudoServiceImpl implements GrupoDeEstudoService{
     private GrupoDeEstudoRepository grupoRepository;
     private AreaEstudoRepository areaRepository;
     private UsuarioRepository usuarioRepository;
+    private TempoMateriaRepository tempoMateriaRepository;
 
     @Autowired
-    public GrupoDeEstudoServiceImpl(GrupoDeEstudoRepository grupoRepository, AreaEstudoRepository areaRepository, UsuarioRepository usuarioRepository) {
+    public GrupoDeEstudoServiceImpl(GrupoDeEstudoRepository grupoRepository, AreaEstudoRepository areaRepository, UsuarioRepository usuarioRepository, TempoMateriaRepository tempoMateriaRepository) {
         this.grupoRepository = grupoRepository;
         this.areaRepository = areaRepository;
         this.usuarioRepository = usuarioRepository;
+        this.tempoMateriaRepository = tempoMateriaRepository;
     }
 
     public GrupoDeEstudoDTO create(CriacaoGrupoDeEstudoDTO dto) {
@@ -62,9 +63,31 @@ public class GrupoDeEstudoServiceImpl implements GrupoDeEstudoService{
     }
 
     @Override
-    public List<UsuarioDTO> getMembrosFromGrupo(UUID grupoId) {
-        GrupoDeEstudo grupo = grupoRepository.findById(grupoId).orElseThrow(GrupoEstudoNaoEncontradoException::new);
-        return grupo.getParticipantes().stream().map(UsuarioDTO::from).toList();
+    public List<MembroComTempoDTO> getMembrosFromGrupo(UUID grupoId) {
+        GrupoDeEstudo grupo = grupoRepository.findById(grupoId)
+                .orElseThrow(GrupoEstudoNaoEncontradoException::new);
+
+        return grupo.getParticipantes().stream().map(usuario -> {
+            UsuarioDTO usuarioDTO = UsuarioDTO.from(usuario);
+
+            List<TempoMateria> emAndamento = tempoMateriaRepository
+                    .getTempoMateriaByStatusAndUsuarioId(StatusCronometro.EM_ANDAMENTO, usuario.getId());
+
+            TempoMateria tempoMateria = null;
+            if (!emAndamento.isEmpty()) {
+                tempoMateria = emAndamento.getFirst();
+            } else {
+                List<TempoMateria> maisRecentes = tempoMateriaRepository
+                        .findMaisRecenteByUsuarioId(usuario.getId());
+                tempoMateria = maisRecentes.isEmpty() ? null : maisRecentes.getFirst();
+            }
+
+            TempoMateriaDTO tempoMateriaDTO = tempoMateria != null
+                    ? new TempoMateriaDTO(tempoMateria)
+                    : null;
+
+            return new MembroComTempoDTO(usuarioDTO, tempoMateriaDTO);
+        }).toList();
     }
 
     public GrupoDeEstudo getById(UUID id) {

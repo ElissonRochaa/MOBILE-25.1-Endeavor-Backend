@@ -1,9 +1,6 @@
 package api.endeavorbackend.controllers;
 
-import api.endeavorbackend.models.DTOs.CriacaoGrupoDeEstudoDTO;
-import api.endeavorbackend.models.DTOs.GrupoDeEstudoDTO;
-import api.endeavorbackend.models.DTOs.RegistroDTO;
-import api.endeavorbackend.models.DTOs.UsuarioDTO;
+import api.endeavorbackend.models.DTOs.*;
 import api.endeavorbackend.services.GrupoDeEstudoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +81,7 @@ public class GrupoDeEstudoController {
     }
 
     @GetMapping("/{grupoId}/membros")
-    public ResponseEntity<List<UsuarioDTO>> getUsuariosFromGrupo(@PathVariable UUID grupoId) {
+    public ResponseEntity<List<MembroComTempoDTO>> getUsuariosFromGrupo(@PathVariable UUID grupoId) {
         return ResponseEntity.ok(grupoDeEstudoService.getMembrosFromGrupo(grupoId));
     }
 }
