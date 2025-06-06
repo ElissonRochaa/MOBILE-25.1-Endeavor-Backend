@@ -1,5 +1,7 @@
 package api.endeavorbackend.services;
 
+import api.endeavorbackend.models.DTOs.MembroComTempoDTO;
+import api.endeavorbackend.models.DTOs.UsuarioDTO;
 import api.endeavorbackend.models.GrupoDeEstudo;
 import api.endeavorbackend.models.DTOs.CriacaoGrupoDeEstudoDTO;
 import api.endeavorbackend.models.DTOs.GrupoDeEstudoDTO;
@@ -19,4 +21,6 @@ public interface GrupoDeEstudoService {
     GrupoDeEstudoDTO adicionarUsuarioAoGrupo(UUID grupoId, UUID usuarioId);
     GrupoDeEstudoDTO removerUsuarioDoGrupo(UUID grupoId, UUID usuarioId);
     String conviteGrupo(UUID grupoId);
+    List<GrupoDeEstudoDTO> getAllFromUsuario(UUID usuarioId);
+    List<MembroComTempoDTO> getMembrosFromGrupo(UUID grupoId);
 }

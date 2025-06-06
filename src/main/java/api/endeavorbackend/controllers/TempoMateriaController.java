@@ -2,6 +2,7 @@ package api.endeavorbackend.controllers;
 
 import api.endeavorbackend.models.DTOs.TempoMateriaDTO;
 import api.endeavorbackend.models.TempoMateria;
+import api.endeavorbackend.models.enuns.StatusCronometro;
 import api.endeavorbackend.services.TempoMateriaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -112,4 +113,22 @@ public class TempoMateriaController {
             return ResponseEntity.badRequest().body("Erro ao buscar sessão: " + e.getMessage());
         }
     }
-}
+        @GetMapping("/buscaPorStatusUsuario")
+        public ResponseEntity<?> buscarSessaoPorStatusUsuario(@RequestParam StatusCronometro statusCronometro, @RequestParam UUID usuarioId){
+            try {
+                List<TempoMateria> sessoes = tempoMateriaService.buscarPorStatusUsuario(statusCronometro, usuarioId);
+                if (sessoes == null) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sessão não encontrada.");
+                }
+
+                List<TempoMateriaDTO> sessaoDTO = sessoes.stream().map(TempoMateriaDTO::new).toList();
+                return ResponseEntity.ok().body(sessaoDTO);
+            } catch (Exception e) {
+                return ResponseEntity.badRequest().body("Erro ao buscar sessão: " + e.getMessage());
+            }
+        }
+
+    }
+
+
+

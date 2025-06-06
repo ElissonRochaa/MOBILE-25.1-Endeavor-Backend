@@ -21,7 +21,7 @@ public record GrupoDeEstudoDTO(
         @NotNull()
         boolean privado,
         @NotNull()
-        UUID areaEstudoId,
+        String areaEstudo,
         Set<UUID> usuariosIds
 ) {
     public static GrupoDeEstudoDTO from(GrupoDeEstudo entity) {
@@ -31,7 +31,7 @@ public record GrupoDeEstudoDTO(
                 entity.getDescricao(),
                 entity.getCapacidade(),
                 entity.isPrivado(),
-                entity.getAreaEstudo().getId(),
+                entity.getAreaEstudo().getNome(),
                 entity.getParticipantes()
                       .stream()
                       .map(Usuario::getId)

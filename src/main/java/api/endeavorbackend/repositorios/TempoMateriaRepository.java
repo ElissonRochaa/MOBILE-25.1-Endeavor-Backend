@@ -85,5 +85,11 @@ public interface TempoMateriaRepository extends JpaRepository<TempoMateria, UUID
                                                             @Param("inicioDoDia") LocalDateTime inicioDoDia,
                                                             @Param("fimDoDia") LocalDateTime fimDoDia);
 
-    List<TempoMateria> getTempoMateriaByStatus(StatusCronometro statusCronometro);
+    List<TempoMateria> getTempoMateriaByStatusAndUsuarioId(StatusCronometro status, UUID usuario_id);
+
+    @Query("SELECT t FROM TempoMateria t " +
+            "WHERE t.usuario.id = :usuarioId " +
+            "ORDER BY t.inicio DESC")
+    List<TempoMateria> findMaisRecenteByUsuarioId(@Param("usuarioId") UUID usuarioId);
+
 }

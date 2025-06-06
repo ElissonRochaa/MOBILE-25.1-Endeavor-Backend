@@ -1,5 +1,6 @@
 package api.endeavorbackend.services;
 import api.endeavorbackend.models.TempoMateria;
+import api.endeavorbackend.models.enuns.StatusCronometro;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,8 @@ public interface TempoMateriaService {
     List<TempoMateria> listar();
 
     void deleteSessao(UUID id);
+
+    List<TempoMateria> buscarPorStatusUsuario(StatusCronometro status, UUID usuarioId);
 
 
 }
