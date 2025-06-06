@@ -1,4 +1,6 @@
 package api.endeavorbackend.models.DTOs;
 
-public record LoginResponseDTO(String token) {   
+import java.util.UUID;
+
+public record LoginResponseDTO(UUID id, String token) {   
 }

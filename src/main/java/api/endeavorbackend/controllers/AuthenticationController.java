@@ -37,8 +37,10 @@ public class AuthenticationController {
         var authentication = authenticationManager.authenticate(userSenha);
 
         var token = tokenService.generateToken((Usuario) authentication.getPrincipal());
+        var userId = ((Usuario) authentication.getPrincipal()).getId();
 
-        return ResponseEntity.ok(new LoginResponseDTO(token));
+
+        return ResponseEntity.ok(new LoginResponseDTO(userId ,token));
     }
 
     @RequestMapping("/registro")
