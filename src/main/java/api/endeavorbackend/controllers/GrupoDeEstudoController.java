@@ -4,6 +4,7 @@ import api.endeavorbackend.models.DTOs.*;
 import api.endeavorbackend.services.GrupoDeEstudoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,7 @@ public class GrupoDeEstudoController {
     @PostMapping
     public ResponseEntity<GrupoDeEstudoDTO> create(@Valid @RequestBody CriacaoGrupoDeEstudoDTO dto) {
         GrupoDeEstudoDTO created = grupoDeEstudoService.create(dto);
-        return ResponseEntity.ok(created);
+        return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(created);
     }
 
     @GetMapping
@@ -34,7 +35,6 @@ public class GrupoDeEstudoController {
 
     @GetMapping("/usuario")
     public ResponseEntity<List<GrupoDeEstudoDTO>> getAllFromUsuario(@RequestParam UUID usuarioId) {
-        System.out.println(usuarioId);
         return ResponseEntity.ok(grupoDeEstudoService.getAllFromUsuario(usuarioId));
     }
 

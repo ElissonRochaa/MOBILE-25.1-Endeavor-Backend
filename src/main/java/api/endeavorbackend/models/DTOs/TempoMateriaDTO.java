@@ -17,7 +17,7 @@ import java.util.UUID;
 public class TempoMateriaDTO {
     private UUID id;
     private UUID usuarioId;
-    private UUID materiaId;
+    private String materia;
     private Timestamp inicio;
     private Timestamp fim;
     private StatusCronometro status;
@@ -26,7 +26,7 @@ public class TempoMateriaDTO {
     public TempoMateriaDTO(TempoMateria tempoMateria) {
         this.id = tempoMateria.getId();
         this.usuarioId = tempoMateria.getUsuario().getId();
-        this.materiaId = tempoMateria.getMateria().getId();
+        this.materia = tempoMateria.getMateria().getNome();
         this.inicio = tempoMateria.getInicio();
         this.fim = tempoMateria.getFim();
         this.status = tempoMateria.getStatus();

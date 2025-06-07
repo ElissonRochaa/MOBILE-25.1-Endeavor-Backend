@@ -56,9 +56,7 @@ public class GrupoDeEstudoServiceImpl implements GrupoDeEstudoService{
 
     @Override
     public List<GrupoDeEstudoDTO> getAllFromUsuario(UUID usuarioId) {
-        System.out.println(usuarioId);
         Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow();
-        System.out.println(usuario);
         return grupoRepository.findByParticipantesContains(usuario).stream().map(GrupoDeEstudoDTO::from).toList();
     }
 
