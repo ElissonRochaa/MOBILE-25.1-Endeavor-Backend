@@ -3,6 +3,7 @@ package api.endeavorbackend.controllers;
 import java.util.List;
 import java.util.UUID;
 
+import api.endeavorbackend.models.DTOs.UsuarioDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,9 +28,9 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Usuario>> listarUsuarios() {
+    public ResponseEntity<List<UsuarioDTO>> listarUsuarios() {
         try {
-            List<Usuario> usuarios = usuarioService.listarUsuarios();
+            List<UsuarioDTO> usuarios = usuarioService.listarUsuarios();
             return ResponseEntity.ok(usuarios);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -38,9 +39,9 @@ public class UsuarioController {
     
 
     @GetMapping("/{id}")
-    ResponseEntity<Usuario> buscarUsuarioPorId(@PathVariable UUID id) {
+    ResponseEntity<UsuarioDTO> buscarUsuarioPorId(@PathVariable UUID id) {
         try {
-            Usuario usuario = usuarioService.buscarUsuarioPorId(id);
+            UsuarioDTO usuario = UsuarioDTO.from(usuarioService.buscarUsuarioPorId(id));
             return ResponseEntity.ok(usuario);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -48,7 +49,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/atualizar")
-    ResponseEntity<Usuario> atualizarUsuario(@RequestBody Usuario usuario) {
+    ResponseEntity<UsuarioDTO> atualizarUsuario(@RequestBody UsuarioDTO usuario) {
         try {
             usuarioService.atualizarUsuario(usuario);
             return ResponseEntity.ok(usuario);
@@ -78,9 +79,9 @@ public class UsuarioController {
     }
 
     @GetMapping("/buscarUsuariosPorNome/{nome}")
-    ResponseEntity<List<Usuario>> buscarUsuariosPorNome(@PathVariable String nome) {
+    ResponseEntity<List<UsuarioDTO>> buscarUsuariosPorNome(@PathVariable String nome) {
         try {
-            List<Usuario> usuarios = usuarioService.buscarUsuariosPorNome(nome);
+            List<UsuarioDTO> usuarios = usuarioService.buscarUsuariosPorNome(nome);
             return ResponseEntity.ok(usuarios);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
