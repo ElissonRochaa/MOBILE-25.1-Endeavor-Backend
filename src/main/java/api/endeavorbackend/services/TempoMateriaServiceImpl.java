@@ -143,6 +143,18 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
         }
     }
 
+    @Override
+    public List<TempoMateria> buscarSessoesDeHojePorUsuario(UUID usuarioId) {
+        LocalDate hoje = LocalDate.now();
+        LocalDateTime inicioDoDia = hoje.atStartOfDay();
+        LocalDateTime fimDoDia = hoje.plusDays(1).atStartOfDay().minusNanos(1);
+
+        Timestamp inicio = Timestamp.valueOf(inicioDoDia);
+        Timestamp fim = Timestamp.valueOf(fimDoDia);
+
+        return tempoMateriaRepository.findByUsuarioIdAndInicioBetween(usuarioId, inicio, fim);
+    }
+
     public List<TempoMateria> listar() {
         return tempoMateriaRepository.findAll();
     }

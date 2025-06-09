@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -91,5 +92,7 @@ public interface TempoMateriaRepository extends JpaRepository<TempoMateria, UUID
             "WHERE t.usuario.id = :usuarioId " +
             "ORDER BY t.inicio DESC")
     List<TempoMateria> findMaisRecenteByUsuarioId(@Param("usuarioId") UUID usuarioId);
+
+    List<TempoMateria> findByUsuarioIdAndInicioBetween(UUID usuarioId, Timestamp inicio, Timestamp fim);
 
 }

@@ -12,4 +12,5 @@ public interface MateriaService {
     void excluir(UUID id);
     Materia salvar(Materia materia);
     Materia atualizar(Materia materia);
+    List<Materia> buscarMateriasPorUsuario(UUID usuarioId);
 }

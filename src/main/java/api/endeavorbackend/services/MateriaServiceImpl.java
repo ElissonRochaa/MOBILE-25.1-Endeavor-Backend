@@ -13,6 +13,8 @@ import java.util.UUID;
 public class MateriaServiceImpl implements MateriaService {
     @Autowired
     MateriaRepository materiaRepository;
+    @Autowired
+    private UsuarioService usuarioService;
 
     public List<Materia> listar() {
         return materiaRepository.findAll();
@@ -34,5 +36,9 @@ public class MateriaServiceImpl implements MateriaService {
         return materiaRepository.save(materia);
     }
 
+    public List<Materia> buscarMateriasPorUsuario(UUID usuarioId) {
+        usuarioService.buscarUsuarioPorId(usuarioId);
+        return materiaRepository.findByUsuarioId(usuarioId);
+    }
 
 }

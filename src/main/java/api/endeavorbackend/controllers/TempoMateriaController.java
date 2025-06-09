@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -25,6 +24,7 @@ public class TempoMateriaController {
 
     @PostMapping("/criar")
     public ResponseEntity<TempoMateriaDTO> create(@RequestBody Map<String, UUID> request ) {
+        System.out.println("WTFFF");
         UUID usuarioId = request.get("usuarioId");
         UUID materiaId = request.get("materiaId");
 
@@ -127,6 +127,21 @@ public class TempoMateriaController {
                 return ResponseEntity.badRequest().body("Erro ao buscar sessão: " + e.getMessage());
             }
         }
+
+    @GetMapping("/sessoes-hoje")
+    public ResponseEntity<?> buscarSessoesDeHojePorUsuario(@RequestParam UUID usuarioId) {
+        try {
+            List<TempoMateria> sessoes = tempoMateriaService.buscarSessoesDeHojePorUsuario(usuarioId);
+            if (sessoes.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhuma sessão encontrada para hoje.");
+            }
+
+            List<TempoMateriaDTO> sessoesDTO = sessoes.stream().map(TempoMateriaDTO::new).sorted((o1, o2) -> o1.getTempoTotalAcumulado() > o2.getTempoTotalAcumulado() ? 1:0).toList();
+            return ResponseEntity.ok(sessoesDTO);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erro ao buscar sessões: " + e.getMessage());
+        }
+    }
 
     }
 

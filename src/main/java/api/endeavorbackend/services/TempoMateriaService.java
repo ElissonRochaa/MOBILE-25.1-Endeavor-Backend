@@ -29,5 +29,6 @@ public interface TempoMateriaService {
     List<TempoMateria> buscarPorStatusUsuario(StatusCronometro status, UUID usuarioId);
 
 
+    List<TempoMateria> buscarSessoesDeHojePorUsuario(UUID usuarioId);
 }
 

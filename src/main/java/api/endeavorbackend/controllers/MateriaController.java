@@ -34,6 +34,7 @@ public class MateriaController {
     @GetMapping("/{id}")
     public ResponseEntity<MateriaDTO> buscar(@PathVariable UUID id) {
         Optional<Materia> materia = materiaService.buscar(id);
+        System.out.println(materia);
         return materia.map(m -> ResponseEntity.ok(new MateriaDTO(m)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -63,4 +64,10 @@ public class MateriaController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<MateriaDTO>> listarPorUsuario(@PathVariable UUID usuarioId) {
+        List<Materia> materias = materiaService.buscarMateriasPorUsuario(usuarioId);
+        List<MateriaDTO> dtoList = materias.stream().map(MateriaDTO::new).toList();
+        return ResponseEntity.ok(dtoList);
+    }
 }
