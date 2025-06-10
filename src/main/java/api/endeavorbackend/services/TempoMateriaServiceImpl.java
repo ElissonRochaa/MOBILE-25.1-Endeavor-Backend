@@ -8,17 +8,14 @@ import api.endeavorbackend.repositorios.MateriaRepository;
 import api.endeavorbackend.repositorios.TempoMateriaRepository;
 import api.endeavorbackend.repositorios.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import java.time.ZoneId;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 public class TempoMateriaServiceImpl implements TempoMateriaService {
@@ -39,7 +36,7 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
         Materia materia = materiaRepository.findById(materiaId)
                 .orElseThrow(() -> new EntityNotFoundException("Matéria não encontrada"));
 
-        if (existeSessao(usuarioId, materiaId, StatusCronometro.EM_ANDAMENTO )) {
+        if (existeSessao(usuarioId, materiaId, StatusCronometro.EM_ANDAMENTO)) {
             TempoMateria sessao = buscarSessaoPorUsuarioIdMateria(usuarioId, materiaId);
 
             LocalDate inicioLocalDate = sessao.getInicio().toInstant()
@@ -52,7 +49,7 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
             }
         }
 
-        if (existeSessao(usuarioId, materiaId, StatusCronometro.PAUSADO )) {
+        if (existeSessao(usuarioId, materiaId, StatusCronometro.PAUSADO)) {
             TempoMateria sessao = buscarSessaoPorUsuarioIdMateria(usuarioId, materiaId);
 
             LocalDate inicioLocalDate = sessao.getInicio().toInstant()
@@ -61,23 +58,23 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
             if (inicioLocalDate.isBefore(LocalDate.now())) {
                 finalizarSessao(sessao.getId());
             } else {
-            return continuarSessao(buscarSessaoPorUsuarioIdMateria(usuarioId, materiaId).getId());
+                return continuarSessao(buscarSessaoPorUsuarioIdMateria(usuarioId, materiaId).getId());
             }
         }
 
-        if (!tempoMateriaRepository.getTempoMateriaByStatusAndUsuarioId(StatusCronometro.EM_ANDAMENTO, usuarioId).isEmpty()){
+        if (!tempoMateriaRepository.getTempoMateriaByStatusAndUsuarioId(StatusCronometro.EM_ANDAMENTO, usuarioId).isEmpty()) {
             throw new IllegalStateException("Já existe uma matéria em andamento");
         }
 
-            TempoMateria tempoMateria = new TempoMateria();
-            tempoMateria.setUsuario(usuario);
-            tempoMateria.setMateria(materia);
-            tempoMateria.setInicio(new Timestamp(System.currentTimeMillis()));
-            tempoMateria.setStatus(StatusCronometro.EM_ANDAMENTO);
-            tempoMateria.setTempoTotalAcumulado(0L);
+        TempoMateria tempoMateria = new TempoMateria();
+        tempoMateria.setUsuario(usuario);
+        tempoMateria.setMateria(materia);
+        tempoMateria.setInicio(new Timestamp(System.currentTimeMillis()));
+        tempoMateria.setStatus(StatusCronometro.EM_ANDAMENTO);
+        tempoMateria.setTempoTotalAcumulado(0L);
 
 
-            return tempoMateriaRepository.save(tempoMateria);
+        return tempoMateriaRepository.save(tempoMateria);
 
     }
 
@@ -104,7 +101,7 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
             throw new IllegalStateException("A sessão não está pausada.");
         }
 
-        if (!tempoMateriaRepository.getTempoMateriaByStatusAndUsuarioId(StatusCronometro.EM_ANDAMENTO, sessao.getUsuario().getId()).isEmpty()){
+        if (!tempoMateriaRepository.getTempoMateriaByStatusAndUsuarioId(StatusCronometro.EM_ANDAMENTO, sessao.getUsuario().getId()).isEmpty()) {
             throw new IllegalStateException("Já existe uma matéria em andamento");
         }
 
@@ -130,13 +127,18 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
         throw new RuntimeException("Sessão de estudo não encontrada");
     }
 
-    public void deleteSessao(UUID id) {
-        tempoMateriaRepository.delete(buscar(id));
+    public UUID deleteSessao(UUID id) {
+        if (tempoMateriaRepository.findById(id).isPresent()) {
+            tempoMateriaRepository.deleteById(id);
+            return id;
+        } else {
+            throw new RuntimeException("Sessão não existe com id " + id);
+        }
     }
 
     @Override
     public List<TempoMateria> buscarPorStatusUsuario(StatusCronometro status, UUID usuarioId) {
-        if (tempoMateriaRepository.getTempoMateriaByStatusAndUsuarioId(status, usuarioId).isEmpty()){
+        if (tempoMateriaRepository.getTempoMateriaByStatusAndUsuarioId(status, usuarioId).isEmpty()) {
             throw new RuntimeException("Não existe sessão com esse status para esse usuário");
         } else {
             return tempoMateriaRepository.getTempoMateriaByStatusAndUsuarioId(status, usuarioId);
@@ -155,6 +157,23 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
         return tempoMateriaRepository.findByUsuarioIdAndInicioBetween(usuarioId, inicio, fim);
     }
 
+    @Override
+    public List<TempoMateria> buscarPorUsuario(UUID usuarioId) {
+        finalizarSessoesAntigas(usuarioId);
+        return tempoMateriaRepository.findByUsuario(usuarioRepository.findById(usuarioId).isPresent() ? usuarioRepository.findById(usuarioId).get() : null);
+    }
+
+    @Override
+    public void finalizarSessaoComFimPersonalizado(TempoMateria sessao, Timestamp fimPersonalizado) {
+        if (sessao.getStatus() == StatusCronometro.EM_ANDAMENTO || sessao.getStatus() == StatusCronometro.PAUSADO) {
+            long tempoFinalizado = (fimPersonalizado.getTime() - sessao.getInicio().getTime()) / 1000;
+            sessao.setTempoTotalAcumulado(sessao.getTempoTotalAcumulado() + tempoFinalizado);
+            sessao.setFim(fimPersonalizado);
+            sessao.setStatus(StatusCronometro.FINALIZADO);
+            tempoMateriaRepository.save(sessao);
+        }
+    }
+
     public List<TempoMateria> listar() {
         return tempoMateriaRepository.findAll();
     }
@@ -169,18 +188,44 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
     }
 
 
-    public TempoMateria buscarSessaoPorUsuarioIdMateria(UUID usuarioId, UUID materiaId){
+    public TempoMateria buscarSessaoPorUsuarioIdMateria(UUID usuarioId, UUID materiaId) {
 
         List<StatusCronometro> statusList = Arrays.asList(StatusCronometro.EM_ANDAMENTO, StatusCronometro.PAUSADO);
 
         return tempoMateriaRepository.getTempoMateriaByUsuarioIdAndMateriaId(usuarioId, materiaId, statusList);
     }
 
-    public TempoMateria buscarSessaoPorUsuarioIdMateriaAtiva(UUID usuarioId, UUID materiaId){
+    public TempoMateria buscarSessaoPorUsuarioIdMateriaAtiva(UUID usuarioId, UUID materiaId) {
 
         List<StatusCronometro> statusList = Arrays.asList(StatusCronometro.EM_ANDAMENTO, StatusCronometro.PAUSADO);
 
         return tempoMateriaRepository.getTempoMateriaByUsuarioIdAndMateriaId(usuarioId, materiaId, statusList);
     }
 
+    private void finalizarSessoesAntigas(UUID usuarioId) {
+        List<TempoMateria> sessoes = Stream.of(StatusCronometro.EM_ANDAMENTO, StatusCronometro.PAUSADO)
+                .flatMap(status -> tempoMateriaRepository
+                        .getTempoMateriaByStatusAndUsuarioId(status, usuarioId)
+                        .stream())
+                .toList();
+
+        LocalDate hoje = LocalDate.now();
+
+        for (TempoMateria sessao : sessoes) {
+            LocalDate dataInicio = sessao.getInicio().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            if (dataInicio.isBefore(hoje)) {
+                Timestamp fimPersonalizado;
+
+                if (sessao.getFim() != null) {
+                    fimPersonalizado = sessao.getFim();
+                } else {
+                    LocalDateTime fimDoDia = dataInicio.atTime(23, 59, 59, 999_000_000);
+                    fimPersonalizado = Timestamp.valueOf(fimDoDia);
+                }
+
+                finalizarSessaoComFimPersonalizado(sessao, fimPersonalizado);
+
+            }
+        }
+    }
 }

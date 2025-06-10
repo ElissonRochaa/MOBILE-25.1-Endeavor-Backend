@@ -17,11 +17,13 @@ public class MateriaDTO {
     private String nome;
     private String descricao;
     private UUID usuarioId;
+    TempoMateriaDTO tempoMateria;
 
     public MateriaDTO(Materia materia) {
         this.id = materia.getId();
         this.nome = materia.getNome();
         this.descricao = materia.getDescricao();
         this.usuarioId = materia.getUsuario() != null? materia.getUsuario().getId() : null;
+        this.tempoMateria = materia.getSessaoAtivaOuPausada();
     }
 }

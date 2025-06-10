@@ -80,6 +80,17 @@ public class TempoMateriaController {
         return ResponseEntity.ok().body(dto);
     }
 
+    @GetMapping("/buscaPorUsuario")
+    public ResponseEntity<?> buscarSessaoPorUsuario(@RequestParam UUID usuarioId){
+        try {
+            List<TempoMateria> sessoes = tempoMateriaService.buscarPorUsuario(usuarioId);
+            List<TempoMateriaDTO> dtoList = sessoes.stream().map(TempoMateriaDTO::new).toList();
+            return ResponseEntity.ok().body(dtoList);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
     @GetMapping("/buscaPorUsuarioMateria")
     public ResponseEntity<?> buscarSessaoPorUsuarioEMateria(
             @RequestParam UUID usuarioId,
@@ -141,6 +152,11 @@ public class TempoMateriaController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Erro ao buscar sessões: " + e.getMessage());
         }
+    }
+
+    @DeleteMapping("/deletar/{id}")
+    public ResponseEntity<?> deletar(@PathVariable UUID id) {
+        return ResponseEntity.ok("sessão " + tempoMateriaService.deleteSessao(id) + " deletada com sucesso.");
     }
 
     }

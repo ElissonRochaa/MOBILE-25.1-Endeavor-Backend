@@ -21,7 +21,7 @@ public class MateriaServiceImpl implements MateriaService {
     }
 
     public Optional<Materia> buscar(UUID id) {
-        return materiaRepository.findById(id);
+        return materiaRepository.findByIdWithTempoMaterias(id);
     }
 
     public void excluir(UUID id) {

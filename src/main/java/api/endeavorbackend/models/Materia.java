@@ -1,5 +1,7 @@
 package api.endeavorbackend.models;
 
+import api.endeavorbackend.models.DTOs.TempoMateriaDTO;
+import api.endeavorbackend.models.enuns.StatusCronometro;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,5 +32,17 @@ public class Materia {
 
     @OneToMany(mappedBy = "materia", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Checklist> checklists = new HashSet<>();
+
+    @OneToMany(mappedBy = "materia", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<TempoMateria> tempoMaterias = new HashSet<>();
+
+    @Transient
+    public TempoMateriaDTO getSessaoAtivaOuPausada() {
+        return tempoMaterias.stream()
+                .filter(t -> t.getStatus() == StatusCronometro.EM_ANDAMENTO || t.getStatus() == StatusCronometro.PAUSADO)
+                .findFirst().map(TempoMateriaDTO::new)
+                .orElse(null);
+    }
+
 
 }
