@@ -33,10 +33,9 @@ public class MateriaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<MateriaDTO> buscar(@PathVariable UUID id) {
-        Optional<Materia> materia = materiaService.buscar(id);
+        Materia materia = materiaService.buscar(id);
         System.out.println(materia);
-        return materia.map(m -> ResponseEntity.ok(new MateriaDTO(m)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(new MateriaDTO(materia));
     }
 
     @PostMapping("/create")
@@ -46,6 +45,7 @@ public class MateriaController {
         materia.setNome(dto.getNome());
         materia.setDescricao(dto.getDescricao());
         materia.setUsuario(usuario);
+
 
         Materia saved = materiaService.salvar(materia);
         return ResponseEntity.ok(new MateriaDTO(saved));

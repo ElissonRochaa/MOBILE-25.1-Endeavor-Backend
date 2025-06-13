@@ -20,7 +20,7 @@ public class MateriaServiceImpl implements MateriaService {
         return materiaRepository.findAll();
     }
 
-    public Optional<Materia> buscar(UUID id) {
+    public Materia buscar(UUID id) {
         return materiaRepository.findByIdWithTempoMaterias(id);
     }
 

@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Service
 public class MetaServiceImpl implements MetaService {
-    private MetaRepository metaRepository;
+    private final MetaRepository metaRepository;
 
     public MetaServiceImpl(MetaRepository metaRepository) {
         this.metaRepository = metaRepository;
@@ -39,13 +39,7 @@ public class MetaServiceImpl implements MetaService {
 
     @Override
     public Meta adicionarMeta(Meta meta) {
-        if (metaRepository.findById(meta.getId()).isPresent()) {
-            throw new EntityNotFoundException("Meta já existente");
-        } else {
-            metaRepository.save(meta);
-        }
-
-        return meta;
+        return metaRepository.save(meta);
     }
 
     @Override
@@ -60,5 +54,10 @@ public class MetaServiceImpl implements MetaService {
     @Override
     public List<Meta> buscarMetas() {
         return metaRepository.findAll();
+    }
+
+    @Override
+    public List<Meta> buscarMetasPorMateria(UUID materiaId) {
+        return metaRepository.findMetaByMateriaId(materiaId);
     }
 }

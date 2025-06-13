@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -15,5 +14,5 @@ public interface MateriaRepository extends JpaRepository<Materia, UUID> {
     List<Materia> findByUsuarioId(UUID usuarioId);
 
     @Query("SELECT m FROM Materia m LEFT JOIN FETCH m.tempoMaterias WHERE m.id = :id")
-    Optional<Materia> findByIdWithTempoMaterias(@Param("id") UUID id);
+    Materia findByIdWithTempoMaterias(@Param("id") UUID id);
 }

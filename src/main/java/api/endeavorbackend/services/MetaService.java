@@ -11,4 +11,5 @@ public interface MetaService {
      Meta adicionarMeta(Meta meta);
      void removerMeta(UUID id);
      List<Meta> buscarMetas();
+     List<Meta> buscarMetasPorMateria(UUID materiaId);
 }

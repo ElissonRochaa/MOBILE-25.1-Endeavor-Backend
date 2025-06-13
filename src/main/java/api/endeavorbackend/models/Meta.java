@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -26,6 +28,12 @@ public class Meta {
     private String descricao;
 
     @ManyToOne
-    @JoinColumn(name = "materia", nullable = false)
+    @JoinColumn(name = "id_materia", nullable = false)
     private Materia materia;
+
+    @Column(name = "data")
+    private LocalDateTime data;
+
+    @Column(name = "concluida")
+    private boolean concluida;
 }
