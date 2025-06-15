@@ -26,6 +26,7 @@ public class TokenService {
             String token = JWT.create()
                               .withIssuer("Api-Endeavor")
                               .withSubject(usuario.getEmail())
+                              .withClaim("id", usuario.getId().toString())
                               .withExpiresAt(expirationDate())
                               .sign(algorithm);
             
@@ -60,5 +61,15 @@ public class TokenService {
 
     private Instant expirationDate() {
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+    }
+
+    public String getUserId(String token) {
+        var userID = JWT.require(Algorithm.HMAC256(secret))
+                      .withIssuer("Api-Endeavor")
+                      .build()
+                      .verify(token)
+                      .getClaim("id");
+        
+        return userID.asString();
     }
 }
