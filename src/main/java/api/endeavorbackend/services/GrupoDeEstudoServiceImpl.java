@@ -12,6 +12,7 @@ import api.endeavorbackend.repositorios.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -56,10 +57,8 @@ public class GrupoDeEstudoServiceImpl implements GrupoDeEstudoService{
 
     @Override
     public List<GrupoDeEstudoDTO> getAllFromUsuario(UUID usuarioId) {
-        System.out.println(usuarioId);
         Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow();
-        System.out.println(usuario);
-        return grupoRepository.findByParticipantesContains(usuario).stream().map(GrupoDeEstudoDTO::from).toList();
+        return grupoRepository.findByParticipantesContains(usuario).stream().sorted(Comparator.comparing(GrupoDeEstudo::isPrivado)).map(GrupoDeEstudoDTO::from).toList();
     }
 
     @Override
@@ -128,19 +127,23 @@ public class GrupoDeEstudoServiceImpl implements GrupoDeEstudoService{
                 .toList();
     }
     public GrupoDeEstudoDTO adicionarUsuarioAoGrupo(UUID grupoId, UUID usuarioId) {
+        System.out.println("CHEGOU");
+        System.out.println(grupoId);
+        System.out.println(usuarioId);
+
         GrupoDeEstudo grupo = grupoRepository.findById(grupoId)
                 .orElseThrow(GrupoEstudoNaoEncontradoException::new);
 
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        if (!grupo.getParticipantes().contains(usuario)) {
-            grupo.getParticipantes().add(usuario);
-            grupoRepository.save(grupo);
+        if (!usuario.getGruposParticipando().contains(grupo)) {
+            usuario.getGruposParticipando().add(grupo);
+            usuarioRepository.save(usuario);
         }
-
         return GrupoDeEstudoDTO.from(grupo);
     }
+
 
     public GrupoDeEstudoDTO removerUsuarioDoGrupo(UUID grupoId, UUID usuarioId) {
         GrupoDeEstudo grupo = grupoRepository.findById(grupoId)
@@ -149,8 +152,13 @@ public class GrupoDeEstudoServiceImpl implements GrupoDeEstudoService{
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        grupo.getParticipantes().remove(usuario);
-        grupoRepository.save(grupo);
+        if (grupo.getParticipantes().contains(usuario)) {
+            grupo.getParticipantes().remove(usuario);
+            usuario.getGruposParticipando().remove(grupo);
+
+            grupoRepository.save(grupo);
+            usuarioRepository.save(usuario);
+        }
 
         return GrupoDeEstudoDTO.from(grupo);
     }

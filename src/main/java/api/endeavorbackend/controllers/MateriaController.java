@@ -33,9 +33,9 @@ public class MateriaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<MateriaDTO> buscar(@PathVariable UUID id) {
-        Optional<Materia> materia = materiaService.buscar(id);
-        return materia.map(m -> ResponseEntity.ok(new MateriaDTO(m)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        Materia materia = materiaService.buscar(id);
+        System.out.println(materia);
+        return ResponseEntity.ok(new MateriaDTO(materia));
     }
 
     @PostMapping("/create")
@@ -45,6 +45,7 @@ public class MateriaController {
         materia.setNome(dto.getNome());
         materia.setDescricao(dto.getDescricao());
         materia.setUsuario(usuario);
+
 
         Materia saved = materiaService.salvar(materia);
         return ResponseEntity.ok(new MateriaDTO(saved));
@@ -63,4 +64,10 @@ public class MateriaController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<MateriaDTO>> listarPorUsuario(@PathVariable UUID usuarioId) {
+        List<Materia> materias = materiaService.buscarMateriasPorUsuario(usuarioId);
+        List<MateriaDTO> dtoList = materias.stream().map(MateriaDTO::new).toList();
+        return ResponseEntity.ok(dtoList);
+    }
 }

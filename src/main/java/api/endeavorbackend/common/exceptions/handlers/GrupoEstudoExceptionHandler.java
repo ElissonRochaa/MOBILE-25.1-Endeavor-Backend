@@ -19,7 +19,6 @@ public class GrupoEstudoExceptionHandler {
     @ExceptionHandler(GrupoEstudoNaoEncontradoException.class)
     public ResponseEntity<ExceptionBody> handleGrupoEstudoNaoEncontrado(
             GrupoEstudoNaoEncontradoException ex, HttpServletRequest req) {
-        System.out.println("Handler chamado");
         ExceptionBody body = ExceptionBody.builder()
                 .httpStatus(HttpStatus.NOT_FOUND.value())
                 .error("Grupo de Estudo não encontrado")

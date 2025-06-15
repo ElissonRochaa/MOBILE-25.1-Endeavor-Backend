@@ -1,5 +1,7 @@
 package api.endeavorbackend.repositorios;
 
+import api.endeavorbackend.models.Materia;
+import api.endeavorbackend.models.Usuario;
 import api.endeavorbackend.models.enuns.StatusCronometro;
 import api.endeavorbackend.models.TempoMateria;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,13 +9,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface TempoMateriaRepository extends JpaRepository<TempoMateria, UUID> {
+
+    List<TempoMateria> findByUsuario(Usuario usuario);
 
     @Query("SELECT t FROM TempoMateria t " +
             "WHERE t.materia.id = :idMateria " +
@@ -91,5 +97,7 @@ public interface TempoMateriaRepository extends JpaRepository<TempoMateria, UUID
             "WHERE t.usuario.id = :usuarioId " +
             "ORDER BY t.inicio DESC")
     List<TempoMateria> findMaisRecenteByUsuarioId(@Param("usuarioId") UUID usuarioId);
+
+    List<TempoMateria> findByUsuarioIdAndInicioBetween(UUID usuarioId, Timestamp inicio, Timestamp fim);
 
 }

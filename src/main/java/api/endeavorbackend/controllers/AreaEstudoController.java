@@ -26,7 +26,6 @@ public class AreaEstudoController {
         AreaEstudo created = areaEstudoService.create(dto);
         return ResponseEntity.ok(AreaEstudoDTO.from(created));
     }
-
     @GetMapping
     public ResponseEntity<List<AreaEstudoDTO>> getAll() {
         List<AreaEstudoDTO> list = areaEstudoService.getAll()

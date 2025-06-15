@@ -39,11 +39,5 @@ public class TempoMateria {
     @Column(name = "tempo_total_acumulado", nullable = false)
     private Long tempoTotalAcumulado = 0L;
 
-    public Long getDuracao() {
-        if (fim != null && inicio != null) {
-            return (fim.getTime() - inicio.getTime()) / 1000 + tempoTotalAcumulado;
-        }
-        return tempoTotalAcumulado;
-    }
 
 }

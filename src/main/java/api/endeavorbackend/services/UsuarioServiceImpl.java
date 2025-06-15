@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import api.endeavorbackend.models.DTOs.UsuarioDTO;
 import api.endeavorbackend.models.Usuario;
 import api.endeavorbackend.repositorios.UsuarioRepository;
 import org.springframework.stereotype.Service;
@@ -32,14 +33,21 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public void atualizarUsuario(Usuario usuario) {
-        Optional<Usuario> usuarioExistente = usuarioRepository.findById(usuario.getId());
+    public void atualizarUsuario(UsuarioDTO dto) {
+        Optional<Usuario> usuarioExistente = usuarioRepository.findById(dto.id());
         if (usuarioExistente.isPresent()) {
-            usuarioRepository.save(usuario);
+            Usuario usuarioAtual = usuarioExistente.get();
+            usuarioAtual.setNome(dto.nome());
+            usuarioAtual.setEmail(dto.email());
+            usuarioAtual.setIdade(dto.idade());
+            usuarioAtual.setEscolaridade(dto.escolaridade());
+
+            usuarioRepository.save(usuarioAtual);
         } else {
-            throw new RuntimeException("Usuário não encontrado com o ID: " + usuario.getId());
+            throw new RuntimeException("Usuário não encontrado com o ID: " + dto.id());
         }
     }
+
 
     @Override
     public void excluirUsuario(UUID id) {
@@ -57,8 +65,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public List<Usuario> buscarUsuariosPorNome(String nome) {
-        List<Usuario> usuarios = usuarioRepository.findByNome(nome);
+    public List<UsuarioDTO> buscarUsuariosPorNome(String nome) {
+        List<UsuarioDTO> usuarios = usuarioRepository.findByNome(nome).stream().map(UsuarioDTO::from).toList();
         if (usuarios.isEmpty()) {
             throw new RuntimeException("Nenhum usuário encontrado com o nome: " + nome);
         }
@@ -66,8 +74,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public List<Usuario> listarUsuarios() {
-        List<Usuario> usuarios = usuarioRepository.findAll();
+    public List<UsuarioDTO> listarUsuarios() {
+        List<UsuarioDTO> usuarios = usuarioRepository.findAll().stream().map(UsuarioDTO::from).toList();
         if (usuarios.isEmpty()) {
             throw new RuntimeException("Nenhum usuário encontrado.");
         }
