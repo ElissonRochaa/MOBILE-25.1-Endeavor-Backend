@@ -14,7 +14,7 @@ public class DeepLinkController {
 
     @GetMapping("/api/abrir-grupo/{id}")
     public ResponseEntity<Void> abrirGrupo(@PathVariable String id) {
-        URI deeplinkUri = URI.create("endeavor://grupos/" + id);
+        URI deeplinkUri = URI.create("endeavor://grupos/convite/" + id);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(deeplinkUri);

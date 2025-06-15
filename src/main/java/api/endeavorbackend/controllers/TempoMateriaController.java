@@ -144,7 +144,7 @@ public class TempoMateriaController {
         try {
             List<TempoMateria> sessoes = tempoMateriaService.buscarSessoesDeHojePorUsuario(usuarioId);
             if (sessoes.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nenhuma sessão encontrada para hoje.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(sessoes);
             }
 
             List<TempoMateriaDTO> sessoesDTO = sessoes.stream().map(TempoMateriaDTO::new).sorted((o1, o2) -> o1.getTempoTotalAcumulado() > o2.getTempoTotalAcumulado() ? 1:0).toList();
