@@ -159,8 +159,13 @@ public class GrupoDeEstudoServiceImpl implements GrupoDeEstudoService{
             grupoRepository.save(grupo);
             usuarioRepository.save(usuario);
         }
+        GrupoDeEstudoDTO grupoDTO = GrupoDeEstudoDTO.from(grupo);
 
-        return GrupoDeEstudoDTO.from(grupo);
+        if (grupo.getParticipantes().isEmpty()) {
+            delete(grupoId);
+        }
+
+        return grupoDTO;
     }
 
     @Override
