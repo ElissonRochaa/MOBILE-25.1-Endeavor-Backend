@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import api.endeavorbackend.config.TokenService;
 import api.endeavorbackend.models.DTOs.AuthenticationDTO;
 import api.endeavorbackend.models.DTOs.LoginResponseDTO;
-import api.endeavorbackend.models.DTOs.RegistroDTO;
+import api.endeavorbackend.models.DTOs.UsuarioDTO;
+import api.endeavorbackend.models.DTOs.UsuarioRegistroDTO;
 import api.endeavorbackend.models.enuns.Role;
 import api.endeavorbackend.models.Usuario;
 import api.endeavorbackend.repositorios.UsuarioRepository;
@@ -37,31 +38,26 @@ public class AuthenticationController {
         var authentication = authenticationManager.authenticate(userSenha);
 
         var token = tokenService.generateToken((Usuario) authentication.getPrincipal());
-        var userId = ((Usuario) authentication.getPrincipal()).getId();
+        var userId = tokenService.getUserId(token);
 
 
         return ResponseEntity.ok(new LoginResponseDTO(userId ,token));
     }
 
     @RequestMapping("/registro")
-    public ResponseEntity<String> register(@RequestBody @Valid RegistroDTO registroDTO) {
-        if (this.usuarioRepository.findByEmail(registroDTO.email()) != null) {
+    public ResponseEntity<String> register(@RequestBody @Valid UsuarioRegistroDTO usuarioDTO) {
+        if (this.usuarioRepository.findByEmail(usuarioDTO.email()) != null) {
             return ResponseEntity.badRequest().body("Email já cadastrado");
         }
 
-        if (registroDTO.nome() == null || registroDTO.email() == null || registroDTO.senha() == null || registroDTO.escolaridade() == null) {
-            return ResponseEntity.badRequest().body("Nome, email, senha, escolaridade e área de estudo são obrigatórios");
-        }
 
-
-
-        String senhaCriptografada = new BCryptPasswordEncoder().encode(registroDTO.senha());
+        String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDTO.senha());
         Usuario usuario = new Usuario(
-                registroDTO.nome(),
-                registroDTO.email(),
+                usuarioDTO.nome(),
+                usuarioDTO.email(),
                 senhaCriptografada,
-                registroDTO.idade(),
-                registroDTO.escolaridade(),
+                usuarioDTO.idade(),
+                usuarioDTO.escolaridade(),
                 Role.USER
         );
 
