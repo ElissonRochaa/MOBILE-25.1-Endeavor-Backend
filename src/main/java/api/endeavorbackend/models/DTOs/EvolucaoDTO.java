@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class EvolucaoDTO {
     private LocalDate data;
-    private Long tempo;
+    private double tempo;
 
 
 }

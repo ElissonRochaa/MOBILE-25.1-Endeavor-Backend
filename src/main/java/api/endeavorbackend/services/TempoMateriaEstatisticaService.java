@@ -15,9 +15,9 @@ public interface TempoMateriaEstatisticaService {
 
     long getTempoTotalNoDiaPorMateria(UUID usuarioId, UUID materiaId, LocalDate date);
 
-    long getTempoNaSemana(UUID usuarioId, LocalDate inicioSemana, LocalDate fimSemana);
+    double getTempoNaSemana(UUID usuarioId, LocalDate inicioSemana, LocalDate fimSemana);
 
-    long getTempoNaSemanaPorMateria(UUID usuarioId, UUID materiaId, LocalDate inicioSemana, LocalDate fimSemana);
+    double getTempoNaSemanaPorMateria(UUID usuarioId, UUID materiaId, LocalDate inicioSemana, LocalDate fimSemana);
 
     List<EvolucaoDTO> getEvolucaoPorPeriodo(UUID usuarioId, LocalDate inicio, LocalDate fim, ChronoUnit unidade, int intervalo);
 
