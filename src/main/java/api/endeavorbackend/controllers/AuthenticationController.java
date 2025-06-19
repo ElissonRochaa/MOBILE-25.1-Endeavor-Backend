@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import api.endeavorbackend.config.TokenService;
 import api.endeavorbackend.models.DTOs.AuthenticationDTO;
 import api.endeavorbackend.models.DTOs.LoginResponseDTO;
-import api.endeavorbackend.models.DTOs.UsuarioDTO;
 import api.endeavorbackend.models.DTOs.UsuarioRegistroDTO;
 import api.endeavorbackend.models.enuns.Role;
 import api.endeavorbackend.models.Usuario;
@@ -32,7 +32,7 @@ public class AuthenticationController {
     @Autowired
     private TokenService tokenService;
 
-    @RequestMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid AuthenticationDTO authenticationDTO) {
         var userSenha = new UsernamePasswordAuthenticationToken(authenticationDTO.email(), authenticationDTO.senha());
         var authentication = authenticationManager.authenticate(userSenha);
@@ -44,7 +44,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(new LoginResponseDTO(userId ,token));
     }
 
-    @RequestMapping("/registro")
+    @PostMapping("/registro")
     public ResponseEntity<String> register(@RequestBody @Valid UsuarioRegistroDTO usuarioDTO) {
         if (this.usuarioRepository.findByEmail(usuarioDTO.email()) != null) {
             return ResponseEntity.badRequest().body("Email já cadastrado");
@@ -54,7 +54,7 @@ public class AuthenticationController {
         String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDTO.senha());
         Usuario usuario = new Usuario(
                 usuarioDTO.nome(),
-                usuarioDTO.email(),
+                usuarioDTO.email().toLowerCase(),
                 senhaCriptografada,
                 usuarioDTO.idade(),
                 usuarioDTO.escolaridade(),

@@ -3,6 +3,7 @@ package api.endeavorbackend.repositorios;
 import api.endeavorbackend.models.AreaEstudo;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import api.endeavorbackend.models.Usuario;
@@ -19,6 +20,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
     List<Usuario> findByNome(String nome);
     List<Usuario> findByAreaEstudo(AreaEstudo areaEstudo);
     
+    @Query("SELECT u FROM Usuario u WHERE u.email = ?1")
+    Usuario encontrarPeloEmail(String email);
     
     
 }

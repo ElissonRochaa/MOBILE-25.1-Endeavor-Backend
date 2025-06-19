@@ -16,5 +16,7 @@ public interface UsuarioService {
     boolean usuarioJaCadastrado(String email);
     List<UsuarioDTO> buscarUsuariosPorNome(String nome);
     List<UsuarioDTO> listarUsuarios();
+    void recuperarSenha(String email);
+    
     
 }

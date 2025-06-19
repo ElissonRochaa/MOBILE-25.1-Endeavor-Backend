@@ -7,6 +7,8 @@ import java.util.UUID;
 import api.endeavorbackend.models.DTOs.UsuarioDTO;
 import api.endeavorbackend.models.Usuario;
 import api.endeavorbackend.repositorios.UsuarioRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,6 +18,9 @@ public class UsuarioServiceImpl implements UsuarioService {
     public UsuarioServiceImpl(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
     }
+
+    @Autowired
+    private CodigoVerificacaoService codigoVerificacaoService;
 
     @Override
     public void cadastrarUsuario(Usuario usuario) {
@@ -80,5 +85,11 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new RuntimeException("Nenhum usuário encontrado.");
         }
         return usuarios;
+    }
+
+    @Override
+    public void recuperarSenha(String email) {
+            String codigo = codigoVerificacaoService.gerarCodigo(email);
+            System.out.println("Código de verificação enviado para o e-mail: " + codigo);
     }
 }

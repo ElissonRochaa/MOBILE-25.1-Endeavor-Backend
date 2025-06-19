@@ -3,27 +3,31 @@ package api.endeavorbackend.controllers;
 import java.util.List;
 import java.util.UUID;
 
+import api.endeavorbackend.models.DTOs.CodigoVerificacaoRequestDTO;
 import api.endeavorbackend.models.DTOs.UsuarioDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import api.endeavorbackend.models.Usuario;
+import api.endeavorbackend.services.CodigoVerificacaoService;
 import api.endeavorbackend.services.UsuarioService;
 
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
     private final UsuarioService usuarioService;
+    private final CodigoVerificacaoService codigoVerificacaoService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, CodigoVerificacaoService codigoVerificacaoService) {
         this.usuarioService = usuarioService;
+        this.codigoVerificacaoService = codigoVerificacaoService;
     }
 
     @GetMapping
@@ -84,6 +88,27 @@ public class UsuarioController {
             return ResponseEntity.ok(usuarios);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    @PostMapping("/recuperar-senha")
+    void recuperarSenha(@RequestBody String email) {
+        try {
+            usuarioService.recuperarSenha(email);
+            System.out.println("Senha recuperada com sucesso para o email: " + email);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao recuperar senha: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/verificar-codigo")
+    public ResponseEntity<Boolean> verificarCodigo(@RequestBody CodigoVerificacaoRequestDTO request) {
+        try {
+        boolean valido = codigoVerificacaoService.verificarCodigo(request.getEmail(), request.getCodigo());
+            codigoVerificacaoService.removerCodigo(request.getEmail());
+            return ResponseEntity.ok(valido);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
         }
     }
 }
