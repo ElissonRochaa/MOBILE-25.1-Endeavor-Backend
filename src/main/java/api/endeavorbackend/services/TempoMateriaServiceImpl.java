@@ -1,9 +1,12 @@
 package api.endeavorbackend.services;
 
+import api.endeavorbackend.common.exceptions.handlers.TempoMateriaExceptionHandler;
 import api.endeavorbackend.models.enuns.StatusCronometro;
 import api.endeavorbackend.models.Materia;
 import api.endeavorbackend.models.TempoMateria;
 import api.endeavorbackend.models.Usuario;
+import api.endeavorbackend.models.exceptions.materia.MateriaNaoEncontradaException;
+import api.endeavorbackend.models.exceptions.tempoMateria.SessaoEmAndamentoException;
 import api.endeavorbackend.repositorios.MateriaRepository;
 import api.endeavorbackend.repositorios.TempoMateriaRepository;
 import api.endeavorbackend.repositorios.UsuarioRepository;
@@ -34,7 +37,7 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
         Materia materia = materiaRepository.findById(materiaId)
-                .orElseThrow(() -> new EntityNotFoundException("Matéria não encontrada"));
+                .orElseThrow(MateriaNaoEncontradaException::new);
 
         if (existeSessao(usuarioId, materiaId, StatusCronometro.EM_ANDAMENTO)) {
             TempoMateria sessao = buscarSessaoPorUsuarioIdMateria(usuarioId, materiaId);
@@ -45,7 +48,7 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
             if (inicioLocalDate.isBefore(LocalDate.now())) {
                 finalizarSessao(sessao.getId());
             } else {
-                throw new IllegalStateException("Já existe uma sessão em andamento.");
+                throw new SessaoEmAndamentoException();
             }
         }
 
@@ -63,7 +66,7 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
         }
 
         if (!tempoMateriaRepository.getTempoMateriaByStatusAndUsuarioId(StatusCronometro.EM_ANDAMENTO, usuarioId).isEmpty()) {
-            throw new IllegalStateException("Já existe uma matéria em andamento");
+            throw new SessaoEmAndamentoException();
         }
 
         TempoMateria tempoMateria = new TempoMateria();
@@ -102,7 +105,7 @@ public class TempoMateriaServiceImpl implements TempoMateriaService {
         }
 
         if (!tempoMateriaRepository.getTempoMateriaByStatusAndUsuarioId(StatusCronometro.EM_ANDAMENTO, sessao.getUsuario().getId()).isEmpty()) {
-            throw new IllegalStateException("Já existe uma matéria em andamento");
+            throw new SessaoEmAndamentoException();
         }
 
         sessao.setInicio(new Timestamp(System.currentTimeMillis()));

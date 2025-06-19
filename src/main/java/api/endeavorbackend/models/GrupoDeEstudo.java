@@ -30,6 +30,10 @@ public class GrupoDeEstudo {
     private boolean privado;
 
     @ManyToOne
+    @JoinColumn(name = "usuario_criador_id", nullable = false)
+    private Usuario criador;
+
+    @ManyToOne
     @JoinColumn(name = "area_estudo_id", nullable = false)
     private AreaEstudo areaEstudo;
 

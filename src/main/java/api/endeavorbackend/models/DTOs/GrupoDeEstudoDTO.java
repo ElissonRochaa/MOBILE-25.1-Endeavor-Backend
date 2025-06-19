@@ -9,19 +9,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public record GrupoDeEstudoDTO(
-
-        @NotNull()
-        UUID id,
-        @NotNull()
-        String titulo,
-        @NotNull()
-        String descricao,
-        @NotNull()
-        int capacidade,
-        @NotNull()
-        boolean privado,
-        @NotNull()
-        String areaEstudo,
+        @NotNull UUID id,
+        @NotNull String titulo,
+        @NotNull String descricao,
+        @NotNull int capacidade,
+        @NotNull boolean privado,
+        @NotNull AreaEstudoDTO areaEstudo,
+        @NotNull UUID usuarioCriadorId,
         Set<UUID> usuariosIds
 ) {
     public static GrupoDeEstudoDTO from(GrupoDeEstudo entity) {
@@ -31,11 +25,12 @@ public record GrupoDeEstudoDTO(
                 entity.getDescricao(),
                 entity.getCapacidade(),
                 entity.isPrivado(),
-                entity.getAreaEstudo().getNome(),
+                AreaEstudoDTO.from(entity.getAreaEstudo()),
+                entity.getCriador().getId(),
                 entity.getParticipantes()
-                      .stream()
-                      .map(Usuario::getId)
-                      .collect(Collectors.toSet()));
-
+                        .stream()
+                        .map(Usuario::getId)
+                        .collect(Collectors.toSet())
+        );
     }
 }

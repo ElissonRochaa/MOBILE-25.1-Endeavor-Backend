@@ -1,10 +1,16 @@
 package api.endeavorbackend.controllers;
 
+import api.endeavorbackend.common.exceptions.ExceptionBody;
+import api.endeavorbackend.models.exceptions.UsuarioNaoEncontradoException;
+import api.endeavorbackend.repositorios.UsuarioRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,11 +23,12 @@ import api.endeavorbackend.models.DTOs.LoginResponseDTO;
 import api.endeavorbackend.models.DTOs.UsuarioRegistroDTO;
 import api.endeavorbackend.models.enuns.Role;
 import api.endeavorbackend.models.Usuario;
-import api.endeavorbackend.repositorios.UsuarioRepository;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthenticationController {
+    
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -37,16 +44,25 @@ public class AuthenticationController {
         var userSenha = new UsernamePasswordAuthenticationToken(authenticationDTO.email(), authenticationDTO.senha());
         var authentication = authenticationManager.authenticate(userSenha);
 
-        var token = tokenService.generateToken((Usuario) authentication.getPrincipal());
+        usuarioRepository.findByEmail(authenticationDTO.email())
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(authenticationDTO.email()));
+
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        authenticationDTO.email(),
+                        authenticationDTO.senha()
+                )
+        );
+
+        String token = tokenService.generateToken((Usuario) auth.getPrincipal());
         var userId = tokenService.getUserId(token);
 
-
-        return ResponseEntity.ok(new LoginResponseDTO(userId ,token));
+        return ResponseEntity.ok(new LoginResponseDTO(userId, token));
     }
 
     @PostMapping("/registro")
     public ResponseEntity<String> register(@RequestBody @Valid UsuarioRegistroDTO usuarioDTO) {
-        if (this.usuarioRepository.findByEmail(usuarioDTO.email()) != null) {
+        if (this.usuarioRepository.findByEmail(usuarioDTO.email()).isPresent()) {
             return ResponseEntity.badRequest().body("Email já cadastrado");
         }
 
@@ -64,5 +80,5 @@ public class AuthenticationController {
         this.usuarioRepository.save(usuario);
         return ResponseEntity.ok().body("Usuário cadastrado com sucesso");
     }
-    
+
 }

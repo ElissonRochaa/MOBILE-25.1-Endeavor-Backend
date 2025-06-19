@@ -44,6 +44,7 @@ public class GrupoDeEstudoServiceImpl implements GrupoDeEstudoService{
         grupo.setAreaEstudo(area);
 
         grupo.setParticipantes(Set.of(criador));
+        grupo.setCriador(criador);
         criador.getGruposParticipando().add(grupo);
 
         GrupoDeEstudo saved = grupoRepository.save(grupo);
@@ -152,9 +153,14 @@ public class GrupoDeEstudoServiceImpl implements GrupoDeEstudoService{
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        if (grupo.getParticipantes().contains(usuario)) {
-            grupo.getParticipantes().remove(usuario);
+        if (grupo.getParticipantes().remove(usuario)) {
             usuario.getGruposParticipando().remove(grupo);
+
+            if (grupo.getParticipantes().isEmpty()) {
+                usuarioRepository.save(usuario);
+                grupoRepository.deleteById(grupoId);
+                return null;
+            }
 
             grupoRepository.save(grupo);
             usuarioRepository.save(usuario);
@@ -163,9 +169,6 @@ public class GrupoDeEstudoServiceImpl implements GrupoDeEstudoService{
         return GrupoDeEstudoDTO.from(grupo);
     }
 
-    @Override
-    public String conviteGrupo(UUID grupoId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'conviteGrupo'");
-    }
+
+
 }

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public record AreaEstudoDTO(UUID id, String nome, List<UUID> grupoDeEstudosIds) {
+public record AreaEstudoDTO(UUID id, String nome, List<UUID> grupoDeEstudosIds, boolean padrao) {
 
     public static AreaEstudoDTO from(AreaEstudo entity) {
         return new AreaEstudoDTO(
@@ -16,7 +16,8 @@ public record AreaEstudoDTO(UUID id, String nome, List<UUID> grupoDeEstudosIds) 
                 entity.getGrupoDeEstudos()
                       .stream()
                       .map(GrupoDeEstudo::getId)
-                      .toList()
+                      .toList(),
+                entity.isPadrao()
         );
     }
 
