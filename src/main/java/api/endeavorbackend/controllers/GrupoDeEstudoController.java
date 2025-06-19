@@ -61,6 +61,7 @@ public class GrupoDeEstudoController {
 
     @GetMapping("/por-area/{areaEstudoId}")
     public ResponseEntity<List<GrupoDeEstudoDTO>> getByAreaEstudo(@PathVariable UUID areaEstudoId) {
+        System.out.println(grupoDeEstudoService.getByAreaEstudo(areaEstudoId));
         return ResponseEntity.ok(grupoDeEstudoService.getByAreaEstudo(areaEstudoId));
     }
 
