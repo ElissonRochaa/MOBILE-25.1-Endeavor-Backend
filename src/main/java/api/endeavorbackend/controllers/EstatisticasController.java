@@ -49,21 +49,21 @@ public class EstatisticasController {
     }
 
     @GetMapping("/semana")
-    public ResponseEntity<Long> getTempoNaSemana(
+    public ResponseEntity<Double> getTempoNaSemana(
             @RequestParam UUID usuarioId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim) {
-        long tempo = estatisticaService.getTempoNaSemana(usuarioId, inicio, fim);
+        double tempo = estatisticaService.getTempoNaSemana(usuarioId, inicio, fim);
         return ResponseEntity.ok(tempo);
     }
 
     @GetMapping("/semana/materia")
-    public ResponseEntity<Long> getTempoNaSemanaPorMateria(
+    public ResponseEntity<Double> getTempoNaSemanaPorMateria(
             @RequestParam UUID usuarioId,
             @RequestParam UUID materiaId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim) {
-        long tempo = estatisticaService.getTempoNaSemanaPorMateria(usuarioId, materiaId, inicio, fim);
+        double tempo = estatisticaService.getTempoNaSemanaPorMateria(usuarioId, materiaId, inicio, fim);
         return ResponseEntity.ok(tempo);
     }
 
@@ -76,6 +76,7 @@ public class EstatisticasController {
             @RequestParam int intervalo
             ) {
         List<EvolucaoDTO> lista = estatisticaService.getEvolucaoPorPeriodo(usuarioId, inicio, fim, unidade, intervalo);
+        lista.forEach(e -> System.out.println(e.getData() + " - " + e.getTempo()));
         return ResponseEntity.ok(lista);
     }
 

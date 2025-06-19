@@ -42,18 +42,18 @@ public class TempoMateriaEstatisticasServiceImpl implements TempoMateriaEstatist
                 .sum();
     }
 
-    public long getTempoNaSemana(UUID usuarioId, LocalDate inicioSemana, LocalDate fimSemana) {
+    public double getTempoNaSemana(UUID usuarioId, LocalDate inicioSemana, LocalDate fimSemana) {
         return tempoMateriaRepository.findByUsuarioAndSemana(
                         usuarioId,
                         inicioSemana.atStartOfDay(),
                         fimSemana.atTime(23, 59, 59)
                 )
                 .stream()
-                .mapToLong(TempoMateria::getTempoTotalAcumulado).map(tempo -> tempo / (60 * 60))
+                .mapToDouble(TempoMateria::getTempoTotalAcumulado).map(tempo -> tempo / (60.0 * 60.0))
                 .sum();
     }
 
-    public long getTempoNaSemanaPorMateria(UUID usuarioId, UUID materiaId, LocalDate inicio, LocalDate fim) {
+    public double getTempoNaSemanaPorMateria(UUID usuarioId, UUID materiaId, LocalDate inicio, LocalDate fim) {
         return tempoMateriaRepository.findByMateriaAndUsuarioAndSemana(
                         materiaId,
                         usuarioId,
@@ -61,7 +61,7 @@ public class TempoMateriaEstatisticasServiceImpl implements TempoMateriaEstatist
                         fim.atTime(23, 59, 59)
                 )
                 .stream()
-                .mapToLong(TempoMateria::getTempoTotalAcumulado)
+                .mapToDouble(t -> t.getTempoTotalAcumulado() / 3600.0)
                 .sum();
     }
 
@@ -70,11 +70,11 @@ public class TempoMateriaEstatisticasServiceImpl implements TempoMateriaEstatist
         List<EvolucaoDTO> evolucao = new ArrayList<>();
 
         if (unidade == ChronoUnit.WEEKS) {
-            LocalDate segunda = inicio.with(DayOfWeek.MONDAY);
+            LocalDate segunda = fim.with(DayOfWeek.MONDAY);
             LocalDate domingo = segunda.plusDays(6);
 
             for (LocalDate dia = segunda; !dia.isAfter(domingo); dia = dia.plusDays(1)) {
-                Long tempo = getTempoNaSemana(usuarioId, dia, dia);
+                double tempo = getTempoNaSemana(usuarioId, dia, dia);
                 evolucao.add(new EvolucaoDTO(dia, tempo));
             }
 
@@ -99,7 +99,7 @@ public class TempoMateriaEstatisticasServiceImpl implements TempoMateriaEstatist
                 subFim = fim;
             }
 
-            long tempo = getTempoNaSemana(usuarioId, atual, subFim);
+            double tempo = getTempoNaSemana(usuarioId, atual, subFim);
             evolucao.add(new EvolucaoDTO(atual, tempo));
 
             atual = switch (unidade) {
