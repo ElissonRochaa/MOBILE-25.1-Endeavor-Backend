@@ -26,6 +26,8 @@ public class AreaEstudo {
     @OneToMany(mappedBy = "areaEstudo")
     private Set<Usuario> usuarios = new HashSet<>();
 
+    @Column(nullable = false)
+    private boolean padrao = false;
 
     @OneToMany(mappedBy = "areaEstudo", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<GrupoDeEstudo> grupoDeEstudos = new HashSet<>();

@@ -48,7 +48,6 @@ public class TokenService {
                       .verify(token)
                       .getSubject();
 
-            System.out.println("Token válido para o usuário: " + email);
             if (email == null || email.isEmpty()) {
                 throw new JWTVerificationException("Token inválido: usuário não encontrado");
             }

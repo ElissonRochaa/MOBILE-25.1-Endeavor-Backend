@@ -28,7 +28,7 @@ public class AreaEstudoServiceImpl implements  AreaEstudoService{
     }
 
     public List<AreaEstudo> getAll() {
-        return repository.findAll();
+        return repository.findByPadraoTrue();
     }
 
 

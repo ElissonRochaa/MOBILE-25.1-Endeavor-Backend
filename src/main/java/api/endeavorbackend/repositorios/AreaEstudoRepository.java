@@ -8,4 +8,6 @@ import java.util.UUID;
 
 public interface AreaEstudoRepository extends JpaRepository<AreaEstudo, UUID> {
     List<AreaEstudo> findByNomeContainingIgnoreCase(String nome);
+
+    List<AreaEstudo> findByPadraoTrue();
 }
