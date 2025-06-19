@@ -1,5 +1,6 @@
 package api.endeavorbackend.models.DTOs;
 
+import api.endeavorbackend.models.AreaEstudo;
 import api.endeavorbackend.models.GrupoDeEstudo;
 import api.endeavorbackend.models.Usuario;
 import jakarta.validation.constraints.NotNull;
@@ -21,7 +22,7 @@ public record GrupoDeEstudoDTO(
         @NotNull()
         boolean privado,
         @NotNull()
-        String areaEstudo,
+        AreaEstudoDTO areaEstudo,
         Set<UUID> usuariosIds
 ) {
     public static GrupoDeEstudoDTO from(GrupoDeEstudo entity) {
@@ -31,7 +32,7 @@ public record GrupoDeEstudoDTO(
                 entity.getDescricao(),
                 entity.getCapacidade(),
                 entity.isPrivado(),
-                entity.getAreaEstudo().getNome(),
+                AreaEstudoDTO.from(entity.getAreaEstudo()),
                 entity.getParticipantes()
                       .stream()
                       .map(Usuario::getId)
