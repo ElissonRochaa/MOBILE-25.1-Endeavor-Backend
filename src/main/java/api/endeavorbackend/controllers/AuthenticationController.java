@@ -1,29 +1,27 @@
 package api.endeavorbackend.controllers;
 
-import api.endeavorbackend.common.exceptions.ExceptionBody;
 import api.endeavorbackend.models.exceptions.UsuarioNaoEncontradoException;
 import api.endeavorbackend.repositorios.UsuarioRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import api.endeavorbackend.config.TokenService;
 import api.endeavorbackend.models.DTOs.AuthenticationDTO;
 import api.endeavorbackend.models.DTOs.LoginResponseDTO;
+import api.endeavorbackend.models.DTOs.TokenDTO;
 import api.endeavorbackend.models.DTOs.UsuarioRegistroDTO;
 import api.endeavorbackend.models.enuns.Role;
 import api.endeavorbackend.models.Usuario;
-import org.springframework.web.server.ResponseStatusException;
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -80,5 +78,28 @@ public class AuthenticationController {
         this.usuarioRepository.save(usuario);
         return ResponseEntity.ok().body("Usuário cadastrado com sucesso");
     }
+
+    @PostMapping("/token-valido")
+    public ResponseEntity<Boolean> tokenValido(@RequestBody TokenDTO auth) {
+        try {
+            if (auth.getToken() == null) {
+                return ResponseEntity.ok(false);
+            }
+
+            String tokenJwt = auth.getToken().replace("Bearer ", "");
+
+            String email = tokenService.validateToken(tokenJwt);
+
+            if (email == null || email.isEmpty()) {
+                return ResponseEntity.ok(false);
+            }
+
+            return ResponseEntity.ok(true);
+
+        } catch (Exception e) {
+            return ResponseEntity.ok(false);
+        }
+    }
+
 
 }

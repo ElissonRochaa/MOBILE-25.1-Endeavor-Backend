@@ -30,11 +30,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST ,"/api/auth/registro").permitAll()
-                        .requestMatchers(HttpMethod.POST ,"/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST ,"/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET ,"/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/usuarios/usuarioJaCadastrado/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/usuarios/**").permitAll()
                         .requestMatchers(HttpMethod.GET ,"/api/abrir-grupo/**").permitAll()
-
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

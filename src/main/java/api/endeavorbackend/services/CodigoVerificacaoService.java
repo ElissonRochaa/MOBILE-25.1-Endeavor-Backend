@@ -18,7 +18,7 @@ public class CodigoVerificacaoService {
     }
 
     public boolean verificarCodigo(String email, String codigoInformado) {
-        return codigoInformado.equals(codigos.get(email));
+        return codigoInformado.equals(this.codigos.get(email));
     }
 
     public void removerCodigo(String email) {
