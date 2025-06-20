@@ -87,9 +87,5 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarios;
     }
 
-    @Override
-    public void recuperarSenha(String email) {
-            String codigo = codigoVerificacaoService.gerarCodigo(email);
-            System.out.println("Código de verificação enviado para o e-mail: " + codigo);
-    }
+
 }

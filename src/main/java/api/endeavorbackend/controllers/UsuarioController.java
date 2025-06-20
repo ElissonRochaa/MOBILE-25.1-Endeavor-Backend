@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import api.endeavorbackend.models.DTOs.CodigoVerificacaoRequestDTO;
+import api.endeavorbackend.models.DTOs.EmailDTO;
 import api.endeavorbackend.models.DTOs.UsuarioDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -92,10 +93,9 @@ public class UsuarioController {
     }
 
     @PostMapping("/recuperar-senha")
-    void recuperarSenha(@RequestBody String email) {
+    void recuperarSenha(@RequestBody EmailDTO email) {
         try {
-            usuarioService.recuperarSenha(email);
-            System.out.println("Senha recuperada com sucesso para o email: " + email);
+            codigoVerificacaoService.gerarCodigo(email.getEmail());
         } catch (Exception e) {
             throw new RuntimeException("Erro ao recuperar senha: " + e.getMessage());
         }
