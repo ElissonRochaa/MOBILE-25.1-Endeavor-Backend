@@ -35,6 +35,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/usuarios/usuarioJaCadastrado/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/usuarios/**").permitAll()
                         .requestMatchers(HttpMethod.GET ,"/api/abrir-grupo/**").permitAll()
+                        .requestMatchers(HttpMethod.GET ,"/api/grupos-estudo/por-area/**").permitAll()
+                        .requestMatchers(HttpMethod.GET ,"/api/areas-estudo").permitAll()
+
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
