@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import api.endeavorbackend.config.TokenService;
 import api.endeavorbackend.models.DTOs.AuthenticationDTO;
 import api.endeavorbackend.models.DTOs.LoginResponseDTO;
+import api.endeavorbackend.models.DTOs.RecuperacaoSenhaDTO;
 import api.endeavorbackend.models.DTOs.TokenDTO;
 import api.endeavorbackend.models.DTOs.UsuarioRegistroDTO;
 import api.endeavorbackend.models.enuns.Role;
@@ -99,6 +100,17 @@ public class AuthenticationController {
         } catch (Exception e) {
             return ResponseEntity.ok(false);
         }
+    }
+
+    @PostMapping("/nova-senha")
+    public ResponseEntity<String> novaSenha(@RequestBody @Valid RecuperacaoSenhaDTO usuarioDTO) {
+        Usuario usuario = this.usuarioRepository.encontrarPeloEmail(usuarioDTO.getEmail());
+
+        String senhaCriptografada = new BCryptPasswordEncoder().encode(usuarioDTO.getSenha());
+        usuario.setSenha(senhaCriptografada);
+        this.usuarioRepository.save(usuario);
+
+        return ResponseEntity.ok("Senha atualizada com sucesso");
     }
 
 
